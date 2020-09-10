@@ -1,0 +1,203 @@
+
+
+// gorm.Model 定义
+// type Model struct {
+// 	ID        uint `gorm:"primary_key"`
+// 	CreatedAt time.Time
+// 	UpdatedAt time.Time
+// 	DeletedAt *time.Time
+//  }
+
+type Thing struct {
+	// gorm.Model
+	// Id int 数据库会自动生成id
+	ID         uint `gorm:"primary_key"`  //使用这个语句以后，添加新数据时，id自动增加
+	Time       string
+	EditStatus string
+	Tag        string
+	Thing      string
+	Done       bool
+}
+
+
+
+1：使用前先导入包
+"github.com/jinzhu/gorm"
+_ "github.com/jinzhu/gorm/dialects/sqlite"
+
+
+2：连接数据库
+db, err := gorm.Open("sqlite3", "/home/test/database/你的路径")
+defer db.Close()
+
+
+3：迁移
+自动迁移模式将保持更新到最新。
+警告：自动迁移仅仅会创建表，缺少列和索引，并且不会改变现有列的类型或删除未使用的列以保护数据。
+db.AutoMigrate(&User{})
+db.AutoMigrate(&User{}, &Product{}, &Order{})
+
+
+4：检查表是否存在
+// 检查模型`User`表是否存在
+db.HasTable(&User{})
+// 检查表`users`是否存在
+db.HasTable("users")
+
+
+5：创建表
+// 为模型`User`创建表
+db.CreateTable(&User{})
+db.Table("users").CreateTable(&User{})
+
+
+6：删除表
+// 删除模型`User`的表
+db.DropTable(&User{})
+// 删除表`users`
+db.DropTable("users")
+// 删除模型`User`的表和表`products`
+db.DropTableIfExists(&User{}, "products")
+
+
+7：修改列
+修改列的类型为给定值
+// 修改模型`User`的description列的数据类型为`text`
+db.Model(&User{}).ModifyColumn("description", "text")
+
+
+8：删除列
+// 删除模型`User`的description列
+db.Model(&User{}).DropColumn("description")
+
+
+9：创建记录
+例如
+db.Create(&User{		
+    Time:       "2001-01-03",
+    EditStatus: "发布",
+    Tag:        "#摄影#",
+    Thing:      "今天去好玩的地方",
+    Done:       false,		
+})
+
+
+10：查询
+// 获取第一条记录，按主键排序
+db.First(&user)
+//// SELECT * FROM users ORDER BY id LIMIT 1;
+// 获取最后一条记录，按主键排序
+db.Last(&user)
+//// SELECT * FROM users ORDER BY id DESC LIMIT 1;
+// 获取所有记录
+db.Find(&users)
+//// SELECT * FROM users;
+// 使用主键获取记录
+db.First(&user, 10)
+//// SELECT * FROM users WHERE id = 10;
+
+
+
+
+11：Where查询条件 (简单SQL)
+// 获取第一个匹配记录
+db.Where("name = ?", "jinzhu").First(&user)
+//// SELECT * FROM users WHERE name = 'jinzhu' limit 1;
+
+// 获取所有匹配记录
+db.Where("name = ?", "jinzhu").Find(&users)
+//// SELECT * FROM users WHERE name = 'jinzhu';
+
+db.Where("name <> ?", "jinzhu").Find(&users)
+
+// IN
+db.Where("name in (?)", []string{"jinzhu", "jinzhu 2"}).Find(&users)
+
+// LIKE
+db.Where("name LIKE ?", "%jin%").Find(&users)
+
+// AND
+db.Where("name = ? AND age >= ?", "jinzhu", "22").Find(&users)
+
+// Time
+db.Where("updated_at > ?", lastWeek).Find(&users)
+
+db.Where("created_at BETWEEN ? AND ?", lastWeek, today).Find(&users)
+
+
+
+
+
+12： Where查询条件 (Struct & Map)
+注意：当使用struct查询时，GORM将只查询那些具有值的字段
+
+// Struct
+db.Where(&User{Name: "jinzhu", Age: 20}).First(&user)
+//// SELECT * FROM users WHERE name = "jinzhu" AND age = 20 LIMIT 1;
+
+// Map
+db.Where(map[string]interface{}{"name": "jinzhu", "age": 20}).Find(&users)
+//// SELECT * FROM users WHERE name = "jinzhu" AND age = 20;
+
+// 主键的Slice
+db.Where([]int64{20, 21, 22}).Find(&users)
+//// SELECT * FROM users WHERE id IN (20, 21, 22);
+
+
+13：更新全部字段
+Save将包括执行更新SQL时的所有字段，即使它没有更改
+db.First(&user)
+user.Name = "jinzhu 2"
+user.Age = 100
+db.Save(&user)
+
+
+
+
+14：更新更改字段
+如果只想更新更改的字段，可以使用Update, Updates
+
+// 更新单个属性（如果更改）
+db.Model(&user).Update("name", "hello")
+//// UPDATE users SET name='hello', updated_at='2013-11-17 21:34:10' WHERE id=111;
+
+// 使用组合条件更新单个属性
+db.Model(&user).Where("active = ?", true).Update("name", "hello")
+//// UPDATE users SET name='hello', updated_at='2013-11-17 21:34:10' WHERE id=111 AND active=true;
+
+// 使用`map`更新多个属性，只会更新这些更改的字段
+db.Model(&user).Updates(map[string]interface{}{"name": "hello", "age": 18, "actived": false})
+//// UPDATE users SET name='hello', age=18, actived=false, updated_at='2013-11-17 21:34:10' WHERE id=111;
+
+// 使用`struct`更新多个属性，只会更新这些更改的和非空白字段
+db.Model(&user).Updates(User{Name: "hello", Age: 18})
+//// UPDATE users SET name='hello', age=18, updated_at = '2013-11-17 21:34:10' WHERE id = 111;
+
+// 警告:当使用struct更新时，FORM将仅更新具有非空值的字段
+// 对于下面的更新，什么都不会更新为""，0，false是其类型的空白值
+db.Model(&user).Updates(User{Name: "", Age: 0, Actived: false})
+
+
+
+15. 删除/软删除
+警告 删除记录时，需要确保其主要字段具有值，GORM将使用主键删除记录，如果主要字段为空，GORM将删除模型的所有记录
+
+// 删除存在的记录
+db.Delete(&email)
+//// DELETE from emails where id=10;
+
+// 为Delete语句添加额外的SQL选项
+db.Set("gorm:delete_option", "OPTION (OPTIMIZE FOR UNKNOWN)").Delete(&email)
+//// DELETE from emails where id=10 OPTION (OPTIMIZE FOR UNKNOWN);
+
+
+
+
+16：批量删除
+删除所有匹配记录
+
+db.Where("email LIKE ?", "%jinzhu%").Delete(Email{})
+//// DELETE from emails where email LIKE "%jinhu%";
+
+db.Delete(Email{}, "email LIKE ?", "%jinzhu%")
+//// DELETE from emails where email LIKE "%jinhu%";
