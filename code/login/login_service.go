@@ -1,7 +1,6 @@
 package login
 
 import (
-	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -9,7 +8,7 @@ import (
 	"tweb/code/tool"
 )
 
-func RegisterSevice(r *gin.Engine) {
+func RegisterService(r *gin.Engine) {
 	r.Static("/login/static", "template/login/static")
 	r.GET("/login", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "login_index.html", nil)
@@ -34,21 +33,6 @@ func RegisterSevice(r *gin.Engine) {
 				"loginTip": "用户名或密码错误",
 			})
 		}
-	})
-
-
-	r.GET("/logout", func(c *gin.Context) {
-		sess := sessions.Default(c)
-		username, ok := sess.Get("username").(string)
-		fmt.Println("this is logout, username:", username)
-		if ok {
-			fmt.Println("delete before", tool.Upks)
-			tool.Upks.Delete(username)
-			fmt.Println("delete after", tool.Upks)
-		}
-		sess.Clear()
-		//sess.Save()
-		c.Redirect(http.StatusFound, "/login")
 	})
 }
 

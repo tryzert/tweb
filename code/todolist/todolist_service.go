@@ -5,7 +5,7 @@ import (
 	"tweb/code/tool"
 )
 
-func RegisterSevice(r *gin.Engine) {
+func RegisterService(r *gin.Engine) {
 	//r.Static("/home/static", "template/home/static")
 	//r.StaticFile("/todolist", "template/home/todolist_index.html")
 	r.GET("/todolist", tool.AuthMiddleWare, func(c *gin.Context) {

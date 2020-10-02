@@ -8,6 +8,7 @@ import (
 	"tweb/code/admin"
 	"tweb/code/home"
 	"tweb/code/login"
+	"tweb/code/logout"
 	"tweb/code/notFound404"
 	"tweb/code/tim"
 	"tweb/code/todolist"
@@ -38,13 +39,15 @@ func registerDefaultService(r *gin.Engine, st *Settings) {
 	 * 以下为默认服务，必须开启
 	*/
 	//注册登录页login服务
-	login.RegisterSevice(r)
+	login.RegisterService(r)
+	//logout服务
+	logout.RegisterService(r)
 	//注册主页home服务
-	home.RegisterSevice(r)
+	home.RegisterService(r)
 	//注册管理页admin服务
-	admin.RegisterSevice(r)
+	admin.RegisterService(r)
 	//注册404页面
-	notFound404.RegisterSevice(r)
+	notFound404.RegisterService(r)
 
 
 	/*
@@ -52,11 +55,11 @@ func registerDefaultService(r *gin.Engine, st *Settings) {
 	*/
 	//注册todolist服务
 	if st.Services.Run_todolist {
-		todolist.RegisterSevice(r)
+		todolist.RegisterService(r)
 	}
 	//注册tim服务
 	if st.Services.Run_tim {
-		tim.RegisterSevice(r)
+		tim.RegisterService(r)
 	}
 }
 

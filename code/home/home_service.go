@@ -8,7 +8,7 @@ import (
 	"tweb/code/tool"
 )
 
-func RegisterSevice(r *gin.Engine) {
+func RegisterService(r *gin.Engine) {
 	r.Static("/home/static", "template/home/static")
 
 	r.GET("/", tool.AuthMiddleWare, func(c *gin.Context) {

@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func RegisterSevice(r *gin.Engine) {
+func RegisterService(r *gin.Engine) {
 	r.GET("admin", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "admin_index.html", nil)
 	})

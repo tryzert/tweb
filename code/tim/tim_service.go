@@ -6,7 +6,7 @@ import (
 	"tweb/code/tool"
 )
 
-func RegisterSevice(r *gin.Engine) {
+func RegisterService(r *gin.Engine) {
 	r.GET("/tim", tool.AuthMiddleWare, func(c *gin.Context) {
 		c.HTML(http.StatusOK, "tim_index.html", nil)
 	})
