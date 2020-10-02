@@ -64,11 +64,6 @@ func registerDefaultService(r *gin.Engine, st *Settings) {
 }
 
 
-type user struct {
-	Name string
-	PassKey string
-}
-
 
 //程序运行入口
 func Run() {

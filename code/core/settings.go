@@ -1,12 +1,14 @@
 package core
+
 import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"os"
+	"tweb/code/tool"
 )
 
 
+//定义配置文件结构体
 type Settings struct {
 	RootDir string `json:"rootdir"`
 	Port string `json:"port"`
@@ -43,15 +45,14 @@ func initSettings() {
 
 
 func init() {
-	_, err := os.Stat("settings.json")
 	//如果配置文件不存在或被删除了，则重新初始化一个
-	if os.IsNotExist(err) {
+	if exist, _ := tool.FileExist("settings.json"); !exist {
 		initSettings()
 	}
 }
 
 
-
+//读取配置文件
 func getSettings() *Settings {
 	v := &Settings{}
 	content, err := ioutil.ReadFile("settings.json")
@@ -68,6 +69,7 @@ func getSettings() *Settings {
 }
 
 
+//设置配置文件
 func setSettings(st *Settings) error {
 	content, err := json.Marshal(st)
 	if err != nil {

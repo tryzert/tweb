@@ -5,6 +5,9 @@ import (
 	"tweb/code/tool"
 )
 
+
+//注册待办事项 todolist 服务
+// to do
 func RegisterService(r *gin.Engine) {
 	//r.Static("/home/static", "template/home/static")
 	//r.StaticFile("/todolist", "template/home/todolist_index.html")

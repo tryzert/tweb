@@ -8,6 +8,8 @@ import (
 	"tweb/code/tool"
 )
 
+
+//注册主页服务
 func RegisterService(r *gin.Engine) {
 	r.Static("/home/static", "template/home/static")
 
