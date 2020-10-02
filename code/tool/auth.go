@@ -74,7 +74,7 @@ func (upks UserPassKeySessions) CheckTimeout(duration time.Duration) {
 				delete(upks, username)
 			}
 		}
-		time.Sleep(time.Minute)
+		time.Sleep(duration)
 	}
 }
 
