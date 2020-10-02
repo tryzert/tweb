@@ -61,14 +61,21 @@ func registerDefaultService(r *gin.Engine, st *Settings) {
 }
 
 
+type user struct {
+	Name string
+	PassKey string
+}
+
 
 //程序运行入口
 func Run() {
 	gin.SetMode(gin.ReleaseMode)
+	//把user这个接头体注册进来，后面跨路由才可以获取到user数据
+	//gob.Register(tool.Upks)
 	r := gin.Default()
 	//r := gin.New()
 	store := cookie.NewStore([]byte("secret"))
-	r.Use(sessions.Sessions("loginValidate", store))
+	r.Use(sessions.Sessions("twebLoginValidate", store))
 
 	//读取配置文件
 	st := getSettings()

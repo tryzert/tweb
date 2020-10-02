@@ -51,6 +51,7 @@ func init() {
 }
 
 
+
 func getSettings() *Settings {
 	v := &Settings{}
 	content, err := ioutil.ReadFile("settings.json")

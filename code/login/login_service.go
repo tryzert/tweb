@@ -1,9 +1,11 @@
 package login
 
 import (
+	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"time"
 	"tweb/code/tool"
 )
 
@@ -24,9 +26,9 @@ func RegisterSevice(r *gin.Engine) {
 			sess.Set("username", username)
 			userPassKey := tool.CreateRandPassKey(32)
 			sess.Set("userPassKey", userPassKey)
-			tool.UserPassKeySessions[username] = userPassKey
+			tool.Upks.Set(username, userPassKey, time.Hour * 2)
 			sess.Save()
-			c.Redirect(http.StatusMovedPermanently, "/")
+			c.Redirect(http.StatusFound, "/")
 		} else { //用户名或密码错误
 			c.HTML(http.StatusOK, "login_index.html", gin.H{
 				"loginTip": "用户名或密码错误",
@@ -34,19 +36,21 @@ func RegisterSevice(r *gin.Engine) {
 		}
 	})
 
+
 	r.GET("/logout", func(c *gin.Context) {
 		sess := sessions.Default(c)
-		username := sess.Get("username")
-		if username != nil {
-			delete(tool.UserPassKeySessions, username)
+		username, ok := sess.Get("username").(string)
+		fmt.Println("this is logout, username:", username)
+		if ok {
+			fmt.Println("delete before", tool.Upks)
+			tool.Upks.Delete(username)
+			fmt.Println("delete after", tool.Upks)
 		}
-
 		sess.Clear()
 		//sess.Save()
-		c.Redirect(http.StatusMovedPermanently, "/login")
+		c.Redirect(http.StatusFound, "/login")
 	})
 }
-
 
 
 
