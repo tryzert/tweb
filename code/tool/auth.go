@@ -1,7 +1,6 @@
 package tool
 
 import (
-	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -91,7 +90,7 @@ func AuthMiddleWare(c *gin.Context) {
 	sess := sessions.Default(c)
 	username, _ := sess.Get("username").(string)
 	userPassKey, _ := sess.Get("userPassKey").(string)
-	fmt.Println("username:", username, "userPassKey:", userPassKey, "upks:", Upks)
+	//fmt.Println("username:", username, "userPassKey:", userPassKey, "upks:", Upks)
 	if username != "" && userPassKey == Upks.Get(username){
 		c.Next()
 	} else {
