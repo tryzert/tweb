@@ -27,4 +27,16 @@ func RegisterService(r *gin.Engine) {
 			"headTip": fmt.Sprintf("你好：%s", username),
 		})
 	})
+	r.POST("/home", tool.AuthMiddleWare, func(c *gin.Context) {
+		keyword := c.DefaultPostForm("keyword", "")
+		if keyword != "" {
+			c.Redirect(http.StatusFound, "http://www.baidu.com/s?wd=" + keyword)
+			return
+		}
+		sess := sessions.Default(c)
+		username := sess.Get("username")
+		c.HTML(http.StatusOK, "home_index.html", gin.H{
+			"headTip": fmt.Sprintf("你好：%s", username),
+		})
+	})
 }

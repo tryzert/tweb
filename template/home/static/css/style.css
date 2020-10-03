@@ -194,7 +194,7 @@ html, body {
     right: 20px;
 }
 #search-inner-box button:before{
-    content: "搜索";
+    content: "百度";
     font-family: FontAwesome;
     /*color: #324b4e;*/
 }

@@ -3,6 +3,7 @@
 	"port": ":9010",
 	"services": {
 		"run_todolist": true,
-		"run_tim": true
+		"run_tim": true,
+		"run_mycloud": true
 	}
 }

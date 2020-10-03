@@ -9,6 +9,7 @@ import (
 	"tweb/code/home"
 	"tweb/code/login"
 	"tweb/code/logout"
+	"tweb/code/mycloud"
 	"tweb/code/notFound404"
 	"tweb/code/tim"
 	"tweb/code/todolist"
@@ -32,6 +33,7 @@ func registerDefaultService(r *gin.Engine, st *Settings) {
 	if st.Services.Run_todolist {
 		htmlFiles = append(htmlFiles, "./template/tim/tim_index.html")
 	}
+
 	r.LoadHTMLFiles(htmlFiles...)
 
 
@@ -60,6 +62,10 @@ func registerDefaultService(r *gin.Engine, st *Settings) {
 	//注册tim服务
 	if st.Services.Run_tim {
 		tim.RegisterService(r)
+	}
+	//注册mycloud服务
+	if st.Services.Run_mycloud {
+		mycloud.RegisterService(r)
 	}
 }
 

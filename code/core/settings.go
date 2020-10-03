@@ -18,6 +18,7 @@ type Settings struct {
 type Services struct {
 	Run_todolist bool `json:"run_todolist"`
 	Run_tim      bool `json:"run_tim"`
+	Run_mycloud bool `json:"run_mycloud"`
 }
 
 
@@ -26,6 +27,7 @@ func initSettings() {
 	services := Services{
 		Run_todolist: true,
 		Run_tim:      true,
+		Run_mycloud: true,
 	}
 	st := &Settings{
 		RootDir: "/media/maple/E盘",
