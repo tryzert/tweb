@@ -17,14 +17,14 @@ func RegisterService(r *gin.Engine) {
 		sess := sessions.Default(c)
 		username := sess.Get("username")
 		c.HTML(http.StatusOK, "home_index.html", gin.H{
-			"headTip": fmt.Sprintf("你好呀：%s", username),
+			"headTip": fmt.Sprintf("你好：%s", username),
 		})
 	})
 	r.GET("/home", tool.AuthMiddleWare, func(c *gin.Context) {
 		sess := sessions.Default(c)
 		username := sess.Get("username")
 		c.HTML(http.StatusOK, "home_index.html", gin.H{
-			"headTip": fmt.Sprintf("你好呀：%s", username),
+			"headTip": fmt.Sprintf("你好：%s", username),
 		})
 	})
 }

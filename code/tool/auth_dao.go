@@ -90,7 +90,7 @@ func UserLoginValidate(username, password string) bool {
 			fmt.Println(err)
 			break
 		}
-		fmt.Println(uname, pword)
+		//fmt.Println(uname, pword)
 		if username == uname && Encryption(password) == pword {
 			return true
 		}

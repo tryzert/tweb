@@ -5,7 +5,8 @@
 
 
 html, body {
-    background: #33d1a0;
+    background: #BBBBBB;
+    /*background: #999999;*/
     height: 100%;
     width: 100%;
 }
@@ -20,7 +21,42 @@ html, body {
 .header {
     width: 100%;
     height: 35%;
-    background-color: green;
+    display: flex;
+    flex-direction: column;
+    /*background-color: green;*/
+}
+
+.header #top {
+    width: 100%;
+    height: 12%;
+}
+
+#top span {
+    padding-left: 20px;
+}
+
+#top span a {
+    float: right;
+    margin-right: 20px;
+    text-decoration: none;
+    color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.header #clock {
+    width: 100%;
+    flex: 1;
+}
+
+.header #search-box {
+    width: 100%;
+    height: 25%;
+    /*background: #7BA7AB;*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .body {
@@ -28,10 +64,6 @@ html, body {
     width: 100%;
     display: flex;
     justify-content: center;
-
-    /* padding: 20px 50px; */
-    /* display: flex;
-    flex-wrap: wrap; */
 }
 
 
@@ -42,7 +74,6 @@ html, body {
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    /* background-color: blueviolet; */
 }
 
 .main .box {
@@ -90,3 +121,80 @@ html, body {
     background-color: yellow; 
 } */
 
+#clock {
+    text-align: center;
+    color: #daf6ff;
+    text-shadow: 0 0 20px #0aafe6, 0 0 20px rgba(10, 175, 230, 0);
+}
+
+
+#clock #date {
+    letter-spacing: 0.1em;
+    font-size: 24px;
+}
+
+#clock #time {
+    letter-spacing: 0.05em;
+    font-size: 60px;
+    /*padding: 5px 0;*/
+    padding: 0;
+}
+
+#clock #text {
+    letter-spacing: 0.1em;
+    font-size: 15px;
+    /*padding: 20px 0 0;*/
+    padding: 0;
+}
+
+
+#clock p {
+    margin: 0;
+    padding: 0;
+}
+
+
+#search-inner-box {
+    width: 350px;
+    height: 44px;
+}
+
+#search-inner-box form {
+    height: 44px;
+    position: relative;
+    width: 320px;
+    margin: 0 auto;
+}
+
+#search-inner-box input, button {
+    border: none;
+    outline: none;
+}
+
+#search-inner-box input {
+    width:250px;
+    height: 42px;
+    padding-left:13px;
+    border-radius:42px;
+    border:2px solid #324B4E;
+    background:#F9F0DA;
+    transition:.3s linear;
+    float:right;
+}
+#search-inner-box input:focus {
+    width: 300px;
+}
+#search-inner-box button {
+    height: 42px;
+    width: 42px;
+    cursor: pointer;
+    position: absolute;
+    background: none;
+    /*top: -2px;*/
+    right: 20px;
+}
+#search-inner-box button:before{
+    content: "搜索";
+    font-family: FontAwesome;
+    /*color: #324b4e;*/
+}
