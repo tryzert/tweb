@@ -6,7 +6,6 @@ import (
 	"tweb/code/tool"
 )
 
-
 //注册即时通讯 tim 服务
 // to do
 func RegisterService(r *gin.Engine) {

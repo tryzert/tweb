@@ -8,7 +8,6 @@ import (
 	"tweb/code/tool"
 )
 
-
 //注册主页服务
 func RegisterService(r *gin.Engine) {
 	r.Static("/home/static", "template/home/static")
@@ -32,7 +31,7 @@ func RegisterService(r *gin.Engine) {
 	r.POST("/home", tool.AuthMiddleWare, func(c *gin.Context) {
 		keyword := c.DefaultPostForm("keyword", "")
 		if keyword != "" {
-			c.Redirect(http.StatusFound, "http://www.baidu.com/s?wd=" + keyword)
+			c.Redirect(http.StatusFound, "http://www.baidu.com/s?wd="+keyword)
 			return
 		} else {
 			sess := sessions.Default(c)

@@ -5,7 +5,6 @@ import (
 	"net/http"
 )
 
-
 //注册404页面
 func RegisterService(r *gin.Engine) {
 	r.Static("/notFound404/static", "template/notFound404/static")

@@ -8,7 +8,6 @@ import (
 	"tweb/code/tool"
 )
 
-
 //注册登录页服务
 func RegisterService(r *gin.Engine) {
 	r.Static("/login/static", "template/login/static")
@@ -28,7 +27,7 @@ func RegisterService(r *gin.Engine) {
 			userPassKey := tool.CreateRandPassKey(32)
 			sess.Set("userPassKey", userPassKey)
 			//tool.Upks.Set(username, userPassKey, time.Hour * 2)
-			tool.Upks.Add(username, time.Hour * 2)
+			tool.Upks.Add(username, time.Hour*2)
 			sess.Save()
 			c.Redirect(http.StatusFound, "/")
 		} else { //用户名或密码错误
@@ -38,7 +37,3 @@ func RegisterService(r *gin.Engine) {
 		}
 	})
 }
-
-
-
-

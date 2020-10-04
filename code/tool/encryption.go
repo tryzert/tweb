@@ -9,7 +9,6 @@ import (
 	加密函数，用来加密：密码，消息内容等等
 */
 
-
 //加密密码，生成长度为32的字符串。
 func Encryption(originalText string) string {
 	h := md5.New()

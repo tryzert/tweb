@@ -7,10 +7,9 @@ import (
 	"tweb/code/tool"
 )
 
-
 //注册登出页服务
 //这个服务不需要公开访问
-func RegisterService(r *gin.Engine)  {
+func RegisterService(r *gin.Engine) {
 	r.GET("/logout", func(c *gin.Context) {
 		sess := sessions.Default(c)
 		username, ok := sess.Get("username").(string)

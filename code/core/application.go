@@ -15,7 +15,6 @@ import (
 	"tweb/code/todolist"
 )
 
-
 //注册服务
 func registerDefaultService(r *gin.Engine, st *Settings) {
 	//载入html
@@ -36,10 +35,9 @@ func registerDefaultService(r *gin.Engine, st *Settings) {
 
 	r.LoadHTMLFiles(htmlFiles...)
 
-
 	/**
 	 * 以下为默认服务，必须开启
-	*/
+	 */
 	//注册登录页login服务
 	login.RegisterService(r)
 	//logout服务
@@ -51,10 +49,9 @@ func registerDefaultService(r *gin.Engine, st *Settings) {
 	//注册404页面
 	notFound404.RegisterService(r)
 
-
 	/*
 	** 以下为注册服务
-	*/
+	 */
 	//注册todolist服务
 	if st.Services.Run_todolist {
 		todolist.RegisterService(r)
@@ -69,8 +66,6 @@ func registerDefaultService(r *gin.Engine, st *Settings) {
 	}
 }
 
-
-
 //程序运行入口
 func Run() {
 	gin.SetMode(gin.ReleaseMode)
@@ -78,6 +73,10 @@ func Run() {
 	//gob.Register(tool.Upks)
 	r := gin.Default()
 	//r := gin.New()
+
+	//服务器端设置允许前端跨域请求
+	r.Use(Cors())
+
 	store := cookie.NewStore([]byte("secret"))
 	r.Use(sessions.Sessions("twebLoginValidate", store))
 

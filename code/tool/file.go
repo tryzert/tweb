@@ -11,7 +11,6 @@ import (
 	跟文件相关的方法
 */
 
-
 //判断文件或文件夹是否存在
 // filepath 为包含路径的文件/文件夹的名称
 func FileExist(filepath string) (bool, error) {
@@ -25,7 +24,6 @@ func FileExist(filepath string) (bool, error) {
 	return false, err
 }
 
-
 //判断 路径是 文件还是文件夹
 func IsFile(filepath string) bool {
 	finfo, err := os.Stat(filepath)
@@ -34,7 +32,6 @@ func IsFile(filepath string) bool {
 	}
 	return !finfo.IsDir()
 }
-
 
 //实现 单个文件 下载功能
 func downloadFile(c *gin.Context, filepath string) {
@@ -48,13 +45,10 @@ func downloadFile(c *gin.Context, filepath string) {
 	c.Writer.Write(content)
 }
 
-
 //实现 整个文件夹 下载功能
 func downloadDir(c *gin.Context, dirpath string) {
 	//todo
 }
-
-
 
 //抽象的下载方法
 func Download(c *gin.Context, path string) {
@@ -70,13 +64,11 @@ func Download(c *gin.Context, path string) {
 	}
 }
 
-
 //压缩文件
 func ZipFile(filepath string) error {
 	//todo
 	return nil
 }
-
 
 //压缩文件夹
 func ZipDir(dirpath string) error {

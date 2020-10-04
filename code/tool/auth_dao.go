@@ -7,19 +7,15 @@ import (
 	"log"
 )
 
-
 /*
 	用于登录权限检验，连接数据库等服务
 */
-
 
 func init() {
 	if exist, _ := FileExist("databases/login.db"); !exist {
 		initDatabase()
 	}
 }
-
-
 
 //初始化 数据库 ： login.db
 func initDatabase() {
@@ -61,7 +57,6 @@ func initDatabase() {
 		return
 	}
 }
-
 
 //检验用户名、密码是否正确
 //用于检验用户名和密码是否存在于数据库
