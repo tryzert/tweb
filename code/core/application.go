@@ -29,9 +29,6 @@ func registerDefaultService(r *gin.Engine, st *Settings) {
 	if st.Services.Run_todolist {
 		htmlFiles = append(htmlFiles, "./template/todolist/todolist_index.html")
 	}
-	if st.Services.Run_todolist {
-		htmlFiles = append(htmlFiles, "./template/tim/tim_index.html")
-	}
 
 	r.LoadHTMLFiles(htmlFiles...)
 

@@ -20,28 +20,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="115d4f41-4e14-4be6-b588-7bc39f1707f8" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/code/core/cors.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/code/todolist/todolist_model.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/code/tool/time_format.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/admin/admin_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/admin/admin_service.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/core/application.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/core/application.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/core/settings.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/core/settings.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/home/home_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/home/home_service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/login/login_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/login/login_service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/logout/logout_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/logout/logout_service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/mycloud/mycloud_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/mycloud/mycloud_service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/notFound404/notFound404_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/notFound404/notFound404_service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/tim/tim_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/tim/tim_service.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/todolist/todolist_api.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/todolist/todolist_api.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/todolist/todolist_dao.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/todolist/todolist_dao.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/todolist/todolist_model.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/todolist/todolist_model.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/code/todolist/todolist_service.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/todolist/todolist_service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/tool/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/tool/auth.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/tool/auth_dao.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/tool/auth_dao.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/tool/encryption.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/tool/encryption.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/tool/file.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/tool/file.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/code/tool/passkey.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/tool/passkey.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/go_build_tweb" beforeDir="false" afterPath="$PROJECT_DIR$/out/go_build_tweb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/code/tool/time_format.go" beforeDir="false" afterPath="$PROJECT_DIR$/code/tool/time_format.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/databases/todolist.db" beforeDir="false" afterPath="$PROJECT_DIR$/databases/todolist.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/go_build_main" beforeDir="false" afterPath="$PROJECT_DIR$/out/go_build_main" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/go_build_test" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/go_build_tweb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/template/todolist/todolist_index.html" beforeDir="false" afterPath="$PROJECT_DIR$/template/todolist/todolist_index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,6 +69,7 @@
     <property name="go.sdk.automatically.set" value="true" />
     <property name="go.tried.to.enable.integration.vgo.integrator" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="preferences.customizations" />
   </component>
   <component name="RunManager">
     <configuration name="go build main" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true">
@@ -123,26 +116,30 @@
       <screen x="56" y="27" width="1864" height="1053" />
     </state>
     <state x="446" y="211" key="#com.intellij.execution.impl.EditConfigurationsDialog/56.27.1864.1053@56.27.1864.1053" timestamp="1601805784003" />
+    <state x="621" y="346" width="723" height="421" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1601996071739">
+      <screen x="56" y="27" width="1864" height="1053" />
+    </state>
+    <state x="621" y="346" width="723" height="421" key="#com.intellij.fileTypes.FileTypeChooser/56.27.1864.1053@56.27.1864.1053" timestamp="1601996071739" />
     <state x="766" y="315" width="424" height="491" key="FileChooserDialogImpl" timestamp="1601646652772">
       <screen x="56" y="27" width="1864" height="1053" />
     </state>
     <state x="766" y="315" width="424" height="491" key="FileChooserDialogImpl/56.27.1864.1053@56.27.1864.1053" timestamp="1601646652772" />
-    <state width="1810" height="332" key="GridCell.Tab.0.bottom" timestamp="1601834492876">
+    <state width="1810" height="335" key="GridCell.Tab.0.bottom" timestamp="1601998820498">
       <screen x="56" y="27" width="1864" height="1053" />
     </state>
-    <state width="1810" height="332" key="GridCell.Tab.0.bottom/56.27.1864.1053@56.27.1864.1053" timestamp="1601834492876" />
-    <state width="1810" height="332" key="GridCell.Tab.0.center" timestamp="1601834492876">
+    <state width="1810" height="335" key="GridCell.Tab.0.bottom/56.27.1864.1053@56.27.1864.1053" timestamp="1601998820498" />
+    <state width="1810" height="335" key="GridCell.Tab.0.center" timestamp="1601998820497">
       <screen x="56" y="27" width="1864" height="1053" />
     </state>
-    <state width="1810" height="332" key="GridCell.Tab.0.center/56.27.1864.1053@56.27.1864.1053" timestamp="1601834492876" />
-    <state width="1810" height="332" key="GridCell.Tab.0.left" timestamp="1601834492875">
+    <state width="1810" height="335" key="GridCell.Tab.0.center/56.27.1864.1053@56.27.1864.1053" timestamp="1601998820497" />
+    <state width="1810" height="335" key="GridCell.Tab.0.left" timestamp="1601998820495">
       <screen x="56" y="27" width="1864" height="1053" />
     </state>
-    <state width="1810" height="332" key="GridCell.Tab.0.left/56.27.1864.1053@56.27.1864.1053" timestamp="1601834492875" />
-    <state width="1810" height="332" key="GridCell.Tab.0.right" timestamp="1601834492876">
+    <state width="1810" height="335" key="GridCell.Tab.0.left/56.27.1864.1053@56.27.1864.1053" timestamp="1601998820495" />
+    <state width="1810" height="335" key="GridCell.Tab.0.right" timestamp="1601998820497">
       <screen x="56" y="27" width="1864" height="1053" />
     </state>
-    <state width="1810" height="332" key="GridCell.Tab.0.right/56.27.1864.1053@56.27.1864.1053" timestamp="1601834492876" />
+    <state width="1810" height="335" key="GridCell.Tab.0.right/56.27.1864.1053@56.27.1864.1053" timestamp="1601998820497" />
     <state width="1810" height="332" key="GridCell.Tab.1.bottom" timestamp="1601834492877">
       <screen x="56" y="27" width="1864" height="1053" />
     </state>
@@ -159,9 +156,13 @@
       <screen x="56" y="27" width="1864" height="1053" />
     </state>
     <state width="1810" height="332" key="GridCell.Tab.1.right/56.27.1864.1053@56.27.1864.1053" timestamp="1601834492877" />
-    <state x="782" y="288" width="672" height="678" key="search.everywhere.popup" timestamp="1601650531328">
+    <state x="469" y="188" width="1037" height="737" key="SettingsEditor" timestamp="1601868065632">
       <screen x="56" y="27" width="1864" height="1053" />
     </state>
-    <state x="782" y="288" width="672" height="678" key="search.everywhere.popup/56.27.1864.1053@56.27.1864.1053" timestamp="1601650531328" />
+    <state x="469" y="188" width="1037" height="737" key="SettingsEditor/56.27.1864.1053@56.27.1864.1053" timestamp="1601868065632" />
+    <state x="782" y="288" width="672" height="678" key="search.everywhere.popup" timestamp="1601890365988">
+      <screen x="56" y="27" width="1864" height="1053" />
+    </state>
+    <state x="782" y="288" width="672" height="678" key="search.everywhere.popup/56.27.1864.1053@56.27.1864.1053" timestamp="1601890365988" />
   </component>
 </project>

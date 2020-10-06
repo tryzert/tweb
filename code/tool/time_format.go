@@ -11,3 +11,8 @@ func TimeFormat(t time.Time) (string, string) {
 	date, tm := fres[0], fres[1]
 	return date, tm
 }
+
+func DateStrToTime(str string) time.Time {
+	res, _ := time.Parse("2006-01-02 15:04:05", str+" 00:00:00")
+	return res
+}
