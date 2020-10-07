@@ -6,6 +6,8 @@ import (
 	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"strconv"
+	"time"
+	"tweb/code/tool"
 )
 
 /*
@@ -38,7 +40,6 @@ func apiHandler(c *gin.Context) {
 			response(c, -1, "请求参数格式错误！", "")
 			return
 		}
-		fmt.Println(data)
 		if updateActiveTaskStatus(data.Id, data.Done) {
 			response(c, 101, "更新数据成功！", "")
 		} else {
@@ -70,7 +71,8 @@ func apiHandler(c *gin.Context) {
 			response(c, -1, "请求参数格式错误！", "")
 		} else {
 			if deleteActiveTask(id) {
-				response(c, 103, "更新数据成功！", "")
+				data, _ := tool.TimeFormat(time.Now())
+				response(c, 103, "更新数据成功！", data)
 			} else {
 				response(c, 103, "更新数据失败！", "")
 			}

@@ -1,0 +1,6 @@
+# dependencies  npm包文件
+/.idea
+/out
+
+# misc
+.DS_Store

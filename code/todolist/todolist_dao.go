@@ -70,7 +70,7 @@ func addActiveTask(data string) (*TaskModel, bool) {
 	//插入1条数据
 	date, time := tool.TimeFormat(time.Now())
 	task, tag := dataHandler(data)
-	if _, err = stmt.Exec(task, date, time, "发布", 0, tag, 0, "00-00-00", 999999); err != nil {
+	if _, err = stmt.Exec(task, date, time, "发布", 0, tag, 0, "00-00-00", 366); err != nil {
 		log.Println("[todolist.db add new thing]:  数据库插入数据失败!")
 		fmt.Println(err)
 		return nil, false
@@ -240,7 +240,7 @@ func queryAllTasks() ([]TaskModel, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT * FROM tasks")
+	rows, err := db.Query("SELECT * FROM tasks ORDER BY id DESC")
 	if err != nil {
 		log.Println("[todolist.db add history thing]:  数据库删除数据失败!222")
 		return res, err
@@ -269,7 +269,7 @@ func queryActiveTasks() ([]TaskModel, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT * FROM tasks WHERE deleted = ?", 0)
+	rows, err := db.Query("SELECT * FROM tasks WHERE deleted = 0")
 	if err != nil {
 		log.Println("[todolist.db add history thing]:  数据库删除数据失败!222")
 		return res, err
@@ -299,7 +299,7 @@ func queryHistoryTasks() ([]TaskModel, error) {
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT * FROM tasks WHERE deleted = ?", 1)
+	rows, err := db.Query("SELECT * FROM tasks WHERE deleted = 1")
 	if err != nil {
 		log.Println("[todolist.db add history thing]:  数据库删除数据失败!")
 		return res, err
