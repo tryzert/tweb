@@ -9,26 +9,31 @@ import (
 
 //定义配置文件结构体
 type Settings struct {
-	RootDir  string   `json:"rootdir"`
 	Port     string   `json:"port"`
 	Services Services `json:"services"`
 }
 
 type Services struct {
-	Run_todolist bool `json:"run_todolist"`
-	Run_tim      bool `json:"run_tim"`
-	Run_mycloud  bool `json:"run_mycloud"`
+	TodolistConf *TodolistConf `json:"todolist_conf"`
+	TapbagConf *TapbagConf `json:"tapbag_conf"`
 }
 
+
+type TodolistConf struct {
+	Run bool `json:"run"`
+}
+
+type TapbagConf struct {
+	Run bool `json:"run"`
+	SrcPath string `json:"src_path"`
+}
 //初始化配置文件，settings.json
 func initSettings() {
 	services := Services{
-		Run_todolist: true,
-		Run_tim:      true,
-		Run_mycloud:  true,
+		&TodolistConf{true},
+		&TapbagConf{true, "./"},
 	}
 	st := &Settings{
-		RootDir:  "/media/maple/E盘",
 		Port:     ":9010",
 		Services: services,
 	}

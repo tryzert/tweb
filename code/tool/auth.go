@@ -84,6 +84,7 @@ func AuthMiddleWare(c *gin.Context) {
 	//fmt.Println("username:", username, "userPassKey:", userPassKey, "upks:", Upks)
 	if username != "" && userPassKey == Upks.Get(username) {
 		c.Next()
+		return
 	} else {
 		c.Redirect(http.StatusFound, "/login")
 		//c.Abort()

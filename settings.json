@@ -1,9 +1,12 @@
 {
-	"rootdir": "/media/maple/E盘",
 	"port": ":9010",
 	"services": {
-		"run_todolist": true,
-		"run_tim": true,
-		"run_mycloud": true
+		"todolist_conf": {
+			"run": true
+		},
+		"tapbag_conf": {
+			"run": true,
+			"src_path": "/home/maple"
+		}
 	}
 }
