@@ -17,10 +17,16 @@ func RegisterService(r *gin.Engine, srcPath string) {
 		c.String(http.StatusOK, "hello tapbag!")
 	})
 
+
+
 	r.POST("/tapbag/api", func(c *gin.Context) {
 		req := RequestContent{}
 		err := c.ShouldBindJSON(&req)
 		if err != nil {
+			response(c, -1, "请求参数错误！", nil)
+			return
+		}
+		if req.Code != 100 {
 			response(c, -1, "请求参数错误！", nil)
 			return
 		}
@@ -29,10 +35,14 @@ func RegisterService(r *gin.Engine, srcPath string) {
 			requestDirFullPath = "./"
 		}
 		fs, err := ioutil.ReadDir(requestDirFullPath)
+
 		if err != nil {
 			response(c, -1, "请求参数错误！", nil)
 			return
 		}
+		//sort.Slice(fs, func(i, j int) bool {
+		//	return fs[i].Name() > fs[j].Name()
+		//})
 		files := []*File{}
 		fmt.Println(req.Data, requestDirFullPath)
 		//var files []*File
@@ -74,7 +84,29 @@ func RegisterService(r *gin.Engine, srcPath string) {
 		}
 		response(c, 100, "请求成功！", files)
 	})
+
+	r.POST("/tapbag/api/online", func(c *gin.Context) {
+		req := RequestContent{}
+		err := c.ShouldBindJSON(&req)
+		if err != nil {
+			response(c, -1, "请求参数错误！", nil)
+			return
+		}
+		if req.Code != 101 {
+			response(c, -1, "请求参数错误！", nil)
+			return
+		}
+		onlineUrl := filepath.Join(srcPath, req.Data)
+		c.JSON(http.StatusOK, gin.H{
+			"code": 101,
+			"tip": "请求成功！",
+			"data": onlineUrl,
+		})
+	})
+
+	r.StaticFS("/tapbag/api/online", http.Dir(srcPath))
 }
+
 
 
 
