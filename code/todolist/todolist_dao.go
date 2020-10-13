@@ -322,11 +322,12 @@ func checkHistoryTasksTimeout(duration time.Duration) {
 	defer db.Close()
 	for {
 		todolist_Db_RWLock.Lock()
-		_, err := db.Exec("update tasks set lefttime = (deletetime + 365 - date('now')) WHERE deleted = 1")
+		_, err := db.Exec("update tasks set lefttime = (deletetime - date('now') + 365) WHERE deleted = 1")
 		if err != nil {
 			log.Println("[check history tasks timeout] update lefttime error!")
 		}
-		_, err = db.Exec("DELETE FROM tasks WHERE deleted = 1 AND lefttime < 0")
+		//_, err = db.Exec("DELETE FROM tasks WHERE deleted = 1 AND date('now', '-366 day') > deletetime")
+		_, err = db.Exec("DELETE FROM tasks WHERE deleted = 1 AND julianday('now') - julianday(deletetime) > 366")
 		if err != nil {
 			log.Println("[check history tasks timeout] delete outtime history tasks error!")
 		}

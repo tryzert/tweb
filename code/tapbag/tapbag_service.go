@@ -1,6 +1,7 @@
 package tapbag
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"io/ioutil"
 	"net/http"
@@ -25,7 +26,7 @@ func RegisterService(r *gin.Engine, srcPath string) {
 		}
 		requestDirFullPath := filepath.Join(srcPath, req.Data)
 		if requestDirFullPath == "" {
-			requestDirFullPath = "."
+			requestDirFullPath = "./"
 		}
 		fs, err := ioutil.ReadDir(requestDirFullPath)
 		if err != nil {
@@ -33,34 +34,40 @@ func RegisterService(r *gin.Engine, srcPath string) {
 			return
 		}
 		files := []*File{}
+		fmt.Println(req.Data, requestDirFullPath)
+		//var files []*File
 		for id, file := range fs {
-			fileinfo := &File{Id: id, FileName: file.Name()}
+			relpath := filepath.Join(req.Data, file.Name())
+			if relpath == "" {
+				relpath = "/"
+			}
+			fileinfo := &File{Id: id, Name: file.Name(), Relpath: relpath}
 			if file.IsDir() {
-				fileinfo.FileType = "folder"
+				fileinfo.Type = "folder"
 			} else {
 				fileextname := strings.ToLower(filepath.Ext(file.Name()))
 				if fileextname == ".zip" || fileextname == ".gz"  || fileextname == ".tar" || fileextname == ".xz"{
-					fileinfo.FileType = "archive"
+					fileinfo.Type = "archive"
 				} else if fileextname == ".mp3" {
-					fileinfo.FileType = "audio"
+					fileinfo.Type = "audio"
 				} else if fileextname == ".doc" {
-					fileinfo.FileType = "doc"
-				} else if fileextname == ".png" || fileextname == ".jpg" {
-					fileinfo.FileType = "image"
+					fileinfo.Type = "doc"
+				} else if fileextname == ".png" || fileextname == ".jpg" || fileextname == ".svg"{
+					fileinfo.Type = "image"
 				} else if fileextname == ".pdf" {
-					fileinfo.FileType = "pdf"
+					fileinfo.Type = "pdf"
 				} else if fileextname == ".ppt" {
-					fileinfo.FileType = "ppt"
+					fileinfo.Type = "ppt"
 				} else if fileextname == ".psd" {
-					fileinfo.FileType = "psd"
+					fileinfo.Type = "psd"
 				} else if fileextname == ".txt" {
-					fileinfo.FileType = "text"
+					fileinfo.Type = "text"
 				} else if fileextname == ".mp4" || fileextname == ".avi" {
-					fileinfo.FileType = "video"
+					fileinfo.Type = "video"
 				} else if fileextname == ".xls" {
-					fileinfo.FileType = "xls"
+					fileinfo.Type = "xls"
 				} else {
-					fileinfo.FileType = "file"
+					fileinfo.Type = "file"
 				}
 			}
 			files = append(files, fileinfo)
@@ -85,9 +92,9 @@ type ResponseContent struct {
 
 type File struct {
 	Id int `json:"id"`
-	FileType string `json:"file_type"`
-	FileName string `json:"file_name"`
-	//FullPath string `json:"full_path"`
+	Type string `json:"type"`
+	Name string `json:"name"`
+	Relpath string `json:"relpath"`
 }
 
 
