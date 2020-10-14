@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
+	"sort"
 	"strings"
 	"tweb/code/tool"
 )
@@ -40,12 +41,22 @@ func RegisterService(r *gin.Engine, srcPath string) {
 			response(c, -1, "请求参数错误！", nil)
 			return
 		}
-		//sort.Slice(fs, func(i, j int) bool {
-		//	return fs[i].Name() > fs[j].Name()
-		//})
+		sort.Slice(fs, func(i, j int) bool {
+			//return fs[i].Name() > fs[j].Name()
+			a, b := fs[i].IsDir(), fs[j].IsDir()
+			if a && b {
+				return fs[i].Name() < fs[j].Name()
+			}
+			if !a && !b {
+				return fs[i].Name() < fs[j].Name()
+			}
+			if a && !b {
+				return true
+			}
+			return false
+		})
 		files := []*File{}
 		fmt.Println(req.Data, requestDirFullPath)
-		//var files []*File
 		for id, file := range fs {
 			relpath := filepath.Join(req.Data, file.Name())
 			if relpath == "" {
@@ -103,7 +114,6 @@ func RegisterService(r *gin.Engine, srcPath string) {
 			"data": onlineUrl,
 		})
 	})
-
 	r.StaticFS("/tapbag/api/online", http.Dir(srcPath))
 }
 

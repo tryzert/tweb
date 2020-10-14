@@ -322,14 +322,41 @@ func checkHistoryTasksTimeout(duration time.Duration) {
 	defer db.Close()
 	for {
 		todolist_Db_RWLock.Lock()
-		_, err := db.Exec("update tasks set lefttime = (deletetime - date('now') + 365) WHERE deleted = 1")
+		rows, err := db.Query("SELECT id, julianday('now') - julianday(deletetime) FROM tasks WHERE deleted = 1")
 		if err != nil {
-			log.Println("[check history tasks timeout] update lefttime error!")
+			log.Println("[check history tasks timeout 0] update lefttime error!")
+		}
+		var (
+			id int
+			lefttime int
+			flefttime float64
+		)
+		queryRes := [][]int{}
+		for rows.Next() {
+			err = rows.Scan(&id, &flefttime)
+			if err != nil {
+				log.Println("[check history tasks timeout 1] update lefttime error!")
+				fmt.Println(err)
+				break
+			}
+			lefttime = 366 - int(flefttime)
+			queryRes = append(queryRes, []int{id, lefttime})
+		}
+
+		stmt, err := db.Prepare("UPDATE tasks SET lefttime = ? WHERE id = ?")
+		if err != nil {
+			log.Println("[check history tasks timeout 2] update lefttime error!")
+		}
+		for _, it := range queryRes {
+			if _, err = stmt.Exec(it[1], it[0]); err != nil {
+				log.Println("[check history tasks timeout 3] delete outtime history tasks error!")
+			}
 		}
 		//_, err = db.Exec("DELETE FROM tasks WHERE deleted = 1 AND date('now', '-366 day') > deletetime")
 		_, err = db.Exec("DELETE FROM tasks WHERE deleted = 1 AND julianday('now') - julianday(deletetime) > 366")
 		if err != nil {
-			log.Println("[check history tasks timeout] delete outtime history tasks error!")
+			fmt.Println(err)
+			log.Println("[check history tasks timeout 3] delete outtime history tasks error!")
 		}
 		todolist_Db_RWLock.Unlock()
 		time.Sleep(duration)
