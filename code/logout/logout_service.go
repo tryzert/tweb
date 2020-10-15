@@ -20,7 +20,7 @@ func RegisterService(r *gin.Engine) {
 			//fmt.Println("delete after", tool.Upks)
 		}
 		sess.Clear()
-		//sess.Save()
+		sess.Save()
 		c.Redirect(http.StatusFound, "/login")
 	})
 }

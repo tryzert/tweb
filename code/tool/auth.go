@@ -35,6 +35,10 @@ func (upks UserPassKeySessions) Get(username string) string {
 
 //有新用户接入，添加一个新用户session
 func (upks UserPassKeySessions) Add(username string, duration time.Duration) {
+	if ssinfo, ok := upks[username]; ok {
+		ssinfo.deadline = time.Now().Add(duration)
+		return
+	}
 	upks.Set(username, CreateRandPassKey(32), duration)
 }
 
@@ -81,13 +85,11 @@ func AuthMiddleWare(c *gin.Context) {
 	sess := sessions.Default(c)
 	username, _ := sess.Get("username").(string)
 	userPassKey, _ := sess.Get("userPassKey").(string)
-	//fmt.Println("username:", username, "userPassKey:", userPassKey, "upks:", Upks)
 	if username != "" && userPassKey == Upks.Get(username) {
 		c.Next()
 		return
 	} else {
 		c.Redirect(http.StatusFound, "/login")
-		//c.Abort()
 		return
 	}
 }
