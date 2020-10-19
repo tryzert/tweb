@@ -7,11 +7,11 @@ import (
 
 //用于产生一个给定长度的随机字符串 userPassKey
 func CreateRandPassKey(length int) string {
-	return randString(length)
+	return RandString(length)
 }
 
 //给定长度的随机字符串生成器
-func randString(length int) string {
+func RandString(length int) string {
 	r := rand.New(rand.NewSource(time.Now().Unix()))
 	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*-+"
 	res := make([]byte, length)
