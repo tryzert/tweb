@@ -10,7 +10,6 @@ import (
 func RegisterService(r *gin.Engine, srcPath string) {
 	r.Static("tapbag/static", "template/tapbag/static")
 	r.GET("/tapbag", tool.AuthMiddleWare, func(c *gin.Context) {
-		//c.String(http.StatusOK, "hello tapbag!")
 		c.HTML(http.StatusOK, "tapbag_index.html", nil)
 	})
 
