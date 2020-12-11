@@ -2,13 +2,13 @@ package tapbag
 
 type RequestContent struct {
 	Code int `json:"code"`
-	Data string `json:"data"`
+	Data interface{} `json:"data"`
 }
 
 type ResponseContent struct {
 	Code int `json:"code"`
 	Tip string `json:"tip"`
-	Data []*File `json:"data"`
+	Data interface{} `json:"data"`
 }
 
 
