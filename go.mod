@@ -1,6 +1,6 @@
 module tweb
 
-go 1.12
+go 1.15
 
 require (
 	github.com/gin-contrib/sessions v0.0.3

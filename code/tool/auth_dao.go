@@ -11,9 +11,22 @@ import (
 	用于登录权限检验，连接数据库等服务
 */
 
+var DB *sql.DB
+
 func init() {
 	if exist, _ := FileExist("databases/login.db"); !exist {
 		initDatabase()
+	} else {
+		db, err := sql.Open("sqlite3", "databases/login.db")
+		if err != nil {
+			log.Panicln("[login.db]:  数据库初始化失败!")
+			return
+		}
+		if db.Ping() != nil {
+			log.Panicln("[login.db]： 连接数据库失败！")
+			return
+		}
+		DB = db
 	}
 }
 
@@ -24,7 +37,12 @@ func initDatabase() {
 		log.Panicln("[login.db]:  数据库初始化失败!")
 		return
 	}
-	defer db.Close()
+	if db.Ping() != nil {
+		log.Panicln("[login.db]： 创建数据库失败！")
+		return
+	}
+
+	DB = db
 
 	sql_table := `CREATE TABLE IF NOT EXISTS "userinfo" (
 		"uid" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -34,6 +52,7 @@ func initDatabase() {
 	db.Exec(sql_table)
 
 	stmt, err := db.Prepare("INSERT INTO userinfo(username, password) values(?, ?)")
+	defer stmt.Close()
 	if err != nil {
 		log.Println("[login.db]:  数据库插入数据失败!")
 		return
@@ -61,19 +80,12 @@ func initDatabase() {
 //检验用户名、密码是否正确
 //用于检验用户名和密码是否存在于数据库
 func UserLoginValidate(username, password string) bool {
-	db, err := sql.Open("sqlite3", "databases/login.db")
-	if err != nil {
-		log.Panicln("[login.db]:  数据库初始化失败!")
-		return false
-	}
-	defer db.Close()
-
-	rows, err := db.Query("SELECT username, password FROM userinfo")
+	rows, err := DB.Query("SELECT username, password FROM userinfo")
 	if err != nil {
 		log.Panicln("[login.db]:  数据库查询数据失败!")
 		return false
 	}
-
+	defer rows.Close()
 	var (
 		//uid int
 		uname string

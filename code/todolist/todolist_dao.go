@@ -21,11 +21,11 @@ func init() {
 	} else {
 		db, err := sql.Open("sqlite3", "databases/todolist.db")
 		if err != nil {
-			log.Panicln("[todolist.db add new thing]:  数据库初始化失败!")
+			log.Panicln("[todolist.db]:  数据库初始化失败!")
 			return
 		}
 		if db.Ping() != nil {
-			log.Panicln("连接数据库失败！")
+			log.Panicln("连接数据库[todolist.db]失败！")
 			return
 		}
 		DB = db
@@ -40,6 +40,10 @@ func initDatabase() {
 	if err != nil {
 		log.Panicln("[todolist.db]:  数据库初始化失败!")
 		return
+	}
+
+	if db.Ping() != nil {
+		log.Panicln("[todolist.db]： 创建数据库失败！")
 	}
 	sql_table := `CREATE TABLE IF NOT EXISTS "tasks" (
 		"id" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -64,6 +68,7 @@ func addActiveTask(data string) (*TaskModel, bool) {
 		log.Println("[todolist.db add new thing]:  准备 插入数据失败!")
 		return nil, false
 	}
+	defer stmt.Close()
 	//插入1条数据
 	date, time := tool.TimeFormat(time.Now())
 	task, tag := dataHandler(data)
@@ -105,6 +110,7 @@ func updateActiveTaskStatus(id, done int) bool {
 		log.Println("[todolist.db update]:  准备更新数据失败!")
 		return false
 	}
+	defer stmt.Close()
 	//更新1条数据
 	if _, err = stmt.Exec(done, id); err != nil {
 		log.Println("[todolist.db update]:  数据库更新数据失败!")
@@ -120,6 +126,7 @@ func deleteActiveTask(id int) bool {
 		log.Println("[todolist.db delete current thing]:  准备删除数据失败!")
 		return false
 	}
+	defer stmt.Close()
 	//更新1条数据
 	date, _ := tool.TimeFormat(time.Now())
 	if _, err = stmt.Exec(1, date, 366, id); err != nil {
@@ -137,6 +144,7 @@ func deleteHistoryTask(id int) bool {
 		log.Println("[todolist.db delete history thing]:  准备删除数据失败!")
 		return false
 	}
+	defer stmt.Close()
 	//插入1条数据
 	if _, err = stmt.Exec(id); err != nil {
 		log.Println("[todolist.db add history thing]:  数据库删除数据失败!")
@@ -152,6 +160,7 @@ func recoverHistoryTask(id int) bool {
 		log.Println("[todolist.db add history thing]:  准备恢复数据失败!")
 		return false
 	}
+	defer stmt.Close()
 	//插入1条数据
 	if _, err = stmt.Exec(0, id); err != nil {
 		log.Println("[todolist.db add history thing]:  数据库恢复数据失败!")
@@ -180,6 +189,7 @@ func dataHandler(data string) (string, string) {
 	}
 	return task, tag
 }
+
 
 //请求数据库中所有的数据
 func queryAllTasks() ([]TaskModel, error) {
@@ -212,7 +222,7 @@ func queryActiveTasks() ([]TaskModel, error) {
 		log.Println("[todolist.db add history thing]:  数据库删除数据失败!222")
 		return res, err
 	}
-
+	defer rows.Close()
 	for rows.Next() {
 		var tm TaskModel
 		err = rows.Scan(&tm.Id, &tm.Task, &tm.Date, &tm.Time, &tm.Editstatus, &tm.Done, &tm.Tag, &tm.Deleted, &tm.Deletetime, &tm.Lefttime)
@@ -234,7 +244,7 @@ func queryHistoryTasks() ([]TaskModel, error) {
 		log.Println("[todolist.db add history thing]:  数据库删除数据失败!")
 		return res, err
 	}
-
+	defer rows.Close()
 	for rows.Next() {
 		var tm TaskModel
 		err = rows.Scan(&tm.Id, &tm.Task, &tm.Date, &tm.Time, &tm.Editstatus, &tm.Done, &tm.Tag, &tm.Deleted, &tm.Deletetime, &tm.Lefttime)
@@ -246,6 +256,7 @@ func queryHistoryTasks() ([]TaskModel, error) {
 	}
 	return res, nil
 }
+
 
 func checkHistoryTasksTimeout(duration time.Duration) {
 	for {
@@ -269,6 +280,7 @@ func checkHistoryTasksTimeout(duration time.Duration) {
 			lefttime = 366 - int(flefttime)
 			queryRes = append(queryRes, []int{id, lefttime})
 		}
+		rows.Close()
 
 		stmt, err := DB.Prepare("UPDATE tasks SET lefttime = ? WHERE id = ?")
 		if err != nil {
@@ -279,7 +291,7 @@ func checkHistoryTasksTimeout(duration time.Duration) {
 				log.Println("[check history tasks timeout 3] delete outtime history tasks error!")
 			}
 		}
-		//_, err = db.Exec("DELETE FROM tasks WHERE deleted = 1 AND date('now', '-366 day') > deletetime")
+		stmt.Close()
 		_, err = DB.Exec("DELETE FROM tasks WHERE deleted = 1 AND julianday('now') - julianday(deletetime) > 366")
 		if err != nil {
 			fmt.Println(err)
