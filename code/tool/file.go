@@ -48,7 +48,7 @@ func downloadSingleFile(c *gin.Context, filepath string) {
 	c.Writer.Write(content)
 }
 
-//实现 整个文件夹 下载功能
+//实现 多个文件 下载功能
 func downloadMultiFiles(c *gin.Context, dirpath string) {
 	//todo
 }
@@ -116,7 +116,7 @@ func ZipMultiFiles(files []string, dest string, compressed bool) error {
 }
 
 
-//压缩文件夹
+//压缩多个文件
 func compressFiles(files []*os.File, dest string, compressed bool) error {
 	d, err := os.Create(dest)
 	if err != nil {
@@ -135,6 +135,7 @@ func compressFiles(files []*os.File, dest string, compressed bool) error {
 }
 
 
+//压缩单个文件
 func compress(file *os.File, prefix string, zw *zip.Writer, compressed bool) error {
 	info, err := file.Stat()
 	if err != nil {
