@@ -253,4 +253,5 @@ func requestDownload(c *gin.Context, srcPath string, data []interface{}) {
 		absPath := filepath.Join(srcPath, fmt.Sprint(relpath))
 		fmt.Println(absPath)
 	}
+	response(c, 2003, "hhh", data)
 }
