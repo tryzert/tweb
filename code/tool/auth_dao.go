@@ -2,7 +2,6 @@ package tool
 
 import (
 	"database/sql"
-	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
 )
@@ -80,27 +79,11 @@ func initDatabase() {
 //检验用户名、密码是否正确
 //用于检验用户名和密码是否存在于数据库
 func UserLoginValidate(username, password string) bool {
-	rows, err := DB.Query("SELECT username, password FROM userinfo")
-	if err != nil {
-		log.Panicln("[login.db]:  数据库查询数据失败!")
+	row := DB.QueryRow(`SELECT uid FROM userinfo WHERE username = ? AND password = ?`, username, Encryption(password))
+	var uid int
+	err := row.Scan(&uid)
+	if uid <= 0 || err == sql.ErrNoRows {
 		return false
 	}
-	defer rows.Close()
-	var (
-		//uid int
-		uname string
-		pword string
-	)
-	for rows.Next() {
-		err = rows.Scan(&uname, &pword)
-		if err != nil {
-			fmt.Println(err)
-			break
-		}
-		//fmt.Println(uname, pword)
-		if username == uname && Encryption(password) == pword {
-			return true
-		}
-	}
-	return false
+	return true
 }
