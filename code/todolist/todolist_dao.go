@@ -87,20 +87,20 @@ func addActiveTask(data string) (*TaskModel, bool) {
 }
 
 //更新活跃任务的内容
-func updateActiveTaskContent(id int, task string, tag string) bool {
+func updateActiveTaskContent(id int, task string, tag string) (string, string, bool) {
 	stmt, err :=DB.Prepare("UPDATE tasks SET task = ?, date = ?, time = ?, editstatus = ?, tag = ? WHERE id = ?")
 	if err != nil {
 		log.Println("[todolist.db update]:  准备更新数据失败!")
-		return false
+		return "", "", false
 	}
 	defer stmt.Close()
 	//更新1条数据
 	date, time := tool.TimeFormat(time.Now())
 	if _, err = stmt.Exec(task, date, time, "编辑", tag, id); err != nil {
 		log.Println("[todolist.db update]:  数据库更新数据失败!")
-		return false
+		return "", "", false
 	}
-	return true
+	return date, time, true
 }
 
 //更新活跃任务的完成状态

@@ -162,9 +162,9 @@ func requestFiles(c *gin.Context, srcPath string, rdata string) {
 			} else if fileextname == ".psd" {
 				fileinfo.Type = "psd"
 				fileinfo.Openable = false
-			} else if fileextname == ".txt" {
+			} else if fileextname == ".txt" || fileextname == ".py" || fileextname == ".cpp" || fileextname == ".c" || fileextname == ".h" || fileextname == ".go" || fileextname == ".java" {
 				fileinfo.Type = "text"
-				fileinfo.Openable = false
+				fileinfo.Openable = true
 			} else if fileextname == ".mp4" || fileextname == ".avi" {
 				fileinfo.Type = "video"
 				fileinfo.Openable = true

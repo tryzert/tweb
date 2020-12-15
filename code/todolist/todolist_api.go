@@ -78,8 +78,10 @@ func apiHandler(c *gin.Context) {
 				data.Id, err = strconv.Atoi(fmt.Sprint(id))
 				if err == nil {
 					task, tag := dataHandler(data.Content)
-					if updateActiveTaskContent(data.Id, task, tag) {
+					if dDate, dTime, ok := updateActiveTaskContent(data.Id, task, tag); ok {
 						dt := make(map[string]string)
+						dt["date"] = dDate
+						dt["time"] = dTime
 						dt["task"] = task
 						dt["tag"] = tag
 						response(c, 1002, "更新数据成功！", dt)
