@@ -4,6 +4,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"sync"
 	"time"
 )
 
@@ -20,13 +21,20 @@ type sessinfo struct {
 	deadline    time.Time
 }
 
-type UserPassKeySessions map[string]sessinfo
+//type UserPassKeySessions map[string]sessinfo
+//var Upks UserPassKeySessions
+type UserPassKeySessionsPool struct {
+	pool map[string]*sessinfo
+	sync.RWMutex
+}
 
-var Upks UserPassKeySessions
+var Upks *UserPassKeySessionsPool
 
 //通过用户名，取出session中对应的 userPassKey
-func (upks UserPassKeySessions) Get(username string) string {
-	res, ok := upks[username]
+func (upks *UserPassKeySessionsPool) Get(username string) string {
+	upks.RWMutex.RLock()
+	defer upks.RWMutex.RUnlock()
+	res, ok := upks.pool[username]
 	if ok {
 		return res.userPassKey
 	}
@@ -34,41 +42,53 @@ func (upks UserPassKeySessions) Get(username string) string {
 }
 
 //有新用户接入，添加一个新用户session
-func (upks UserPassKeySessions) Add(username string, duration time.Duration) {
-	if ssinfo, ok := upks[username]; ok {
+func (upks *UserPassKeySessionsPool) Add(username string, duration time.Duration) {
+	upks.RWMutex.Lock()
+
+	if ssinfo, ok := upks.pool[username]; ok {
 		ssinfo.deadline = time.Now().Add(duration)
-		return
+		upks.RWMutex.Unlock()
+	} else {
+		upks.RWMutex.Unlock()
+		upks.Set(username, CreateRandPassKey(32), duration)
 	}
-	upks.Set(username, CreateRandPassKey(32), duration)
+
 }
 
 //设置或更新一个用户session信息
-func (upks UserPassKeySessions) Set(username, userPassKey string, duration time.Duration) {
-	upks[username] = sessinfo{
+func (upks *UserPassKeySessionsPool) Set(username, userPassKey string, duration time.Duration) {
+	upks.RWMutex.Lock()
+	defer upks.RWMutex.Unlock()
+	upks.pool[username] = &sessinfo{
 		userPassKey: userPassKey,
 		deadline:    time.Now().Add(duration),
 	}
 }
 
 //删除一个用户session信息
-func (upks UserPassKeySessions) Delete(username string) {
-	delete(upks, username)
+func (upks *UserPassKeySessionsPool) Delete(username string) {
+	upks.RWMutex.Lock()
+	defer upks.RWMutex.Unlock()
+	delete(upks.pool, username)
 }
 
 //清空此服务器上所有用户的session信息
-func (upks UserPassKeySessions) Clear() {
-	for username, _ := range upks {
-		delete(upks, username)
+func (upks *UserPassKeySessionsPool) Clear() {
+	upks.RWMutex.Lock()
+	defer upks.RWMutex.Unlock()
+	for username, _ := range upks.pool {
+		//delete(upks.pool, username)
+		upks.Delete(username)
 	}
 }
 
 //用于自动更新服务器session状态，定时清除过期的session信息
-func (upks UserPassKeySessions) CheckTimeout(duration time.Duration) {
+func (upks *UserPassKeySessionsPool) CheckTimeout(duration time.Duration) {
 	for {
 		now := time.Now()
-		for username, info := range upks {
+		for username, info := range upks.pool {
 			if info.deadline.Before(now) {
-				delete(upks, username)
+				upks.Delete(username)
 			}
 		}
 		time.Sleep(duration)
@@ -76,7 +96,9 @@ func (upks UserPassKeySessions) CheckTimeout(duration time.Duration) {
 }
 
 func init() {
-	Upks = make(map[string]sessinfo)
+	Upks = &UserPassKeySessionsPool{
+		pool: make(map[string]*sessinfo),
+	}
 	go Upks.CheckTimeout(time.Hour * 2)
 }
 

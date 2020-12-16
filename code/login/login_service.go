@@ -20,7 +20,6 @@ func RegisterService(r *gin.Engine) {
 		// password := c.PostForm("password")
 		username := c.DefaultPostForm("username", "匿名")
 		password := c.DefaultPostForm("password", "******")
-
 		if tool.UserLoginValidate(username, password) { //用户名和密码都正确，跳转到首页
 			sess := sessions.Default(c)
 			sess.Set("username", username)
