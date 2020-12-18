@@ -65,6 +65,8 @@ func apiHandler(srcPath string) func(c *gin.Context) {
 			}
 			response(c, -1, "请求参数错误！", nil)
 		// 2004 move
+		case 2004:
+			response(c, -1, "请求参数错误！", nil)
 		// 2005 rename
 		case 2005:
 			if reflect.TypeOf(req.Data).Kind().String() == "map" {
@@ -93,6 +95,14 @@ func apiHandler(srcPath string) func(c *gin.Context) {
 				}
 			}
 			response(c, -1, "请求参数错误！", nil)
+		// 2007 request folders
+		case 2007:
+			if reflect.TypeOf(req.Data).Name() == "string" {
+				data := reflect.ValueOf(req.Data).String()
+				requestFolders(c, srcPath, data)
+			} else {
+				response(c, -1, "请求参数错误！", nil)
+			}
 		default:
 			response(c, -1, "请求参数错误！", nil)
 			return
@@ -102,7 +112,7 @@ func apiHandler(srcPath string) func(c *gin.Context) {
 }
 
 // 2000
-func requestFiles(c *gin.Context, srcPath string, rdata string) {
+func requestFiles(c *gin.Context, srcPath, rdata string) {
 	requestDirFullPath := filepath.Join(srcPath, rdata)
 	if requestDirFullPath == "" {
 		requestDirFullPath = "./"
@@ -159,7 +169,7 @@ func requestFiles(c *gin.Context, srcPath string, rdata string) {
 			} else if fileextname == ".psd" {
 				fileinfo.Type = "psd"
 				fileinfo.Openable = false
-			} else if fileextname == ".txt" || fileextname == ".py" || fileextname == ".cpp" || fileextname == ".c" || fileextname == ".h" || fileextname == ".go" || fileextname == ".java" {
+			} else if fileextname == ".txt" || fileextname == ".py" || fileextname == ".cpp" || fileextname == ".c" || fileextname == ".h" || fileextname == ".go" || fileextname == ".java" || fileextname == ".html" {
 				fileinfo.Type = "text"
 				fileinfo.Openable = true
 			} else if fileextname == ".mp4" || fileextname == ".avi" {
@@ -175,7 +185,7 @@ func requestFiles(c *gin.Context, srcPath string, rdata string) {
 		}
 		files = append(files, fileinfo)
 	}
-	response(c, 2000, "请求成功！", files)
+	response(c, 2000, "请求数据成功！", files)
 }
 
 func requestMakeNewFolder(c *gin.Context, srcPath, relpath string) {
@@ -268,4 +278,44 @@ func requestDownload(c *gin.Context, srcPath string, data []interface{}) {
 	} else {
 		response(c, 2003, "服务器打包文件成功，下载即将开始！", zipFileName)
 	}
+}
+
+
+func requestFolders(c *gin.Context, srcPath, relpath string) {
+	fullpath := filepath.Join(srcPath, relpath)
+	if exist, err := tool.FileExist(fullpath); exist && err == nil {
+		folders := make([]*Folder, 0)
+		infos, err := ioutil.ReadDir(fullpath)
+		if err != nil {
+			response(c, -1, "请求参数错误！", nil)
+			return
+		}
+		for _, info := range infos {
+			if info.IsDir() {
+				folder := &Folder{Name: info.Name(), Src: filepath.Join(relpath, info.Name())}
+				if folderHasFolder(srcPath, folder.Src) {
+					folder.HasChildren = true
+				} else {
+					folder.HasChildren = false
+				}
+				folders = append(folders, folder)
+			}
+		}
+		response(c, 2007, "请求数据成功！", folders)
+	} else {
+		response(c, -1, "请求参数错误！", nil)
+	}
+}
+
+func folderHasFolder(srcPath, path string) bool {
+	infos, err := ioutil.ReadDir(filepath.Join(srcPath, path))
+	if err != nil {
+		return false
+	}
+	for _, info := range infos {
+		if info.IsDir() {
+			return true
+		}
+	}
+	return false
 }

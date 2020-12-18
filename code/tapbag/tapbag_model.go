@@ -18,3 +18,10 @@ type File struct {
 	Name     string `json:"name"`
 	Relpath  string `json:"relpath"`
 }
+
+type Folder struct {
+	Name string `json:"name"`
+	Src string `json:"src"`
+	HasChildren bool `json:"hasChildren"`
+	Children []*Folder `json:"children"`
+}
