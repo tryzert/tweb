@@ -23,7 +23,7 @@ func RegisterService(r *gin.Engine) {
 		if tool.UserLoginValidate(username, password) { //用户名和密码都正确，跳转到首页
 			sess := sessions.Default(c)
 			sess.Set("username", username)
-			if ukey := tool.Upks.Get(username); ukey != ""{
+			if ukey := tool.Upks.Get(username); ukey != "" {
 				sess.Set("userPassKey", ukey)
 			} else {
 				userPassKey := tool.CreateRandPassKey(32)

@@ -36,7 +36,7 @@ func apiHandler(c *gin.Context) {
 			Id   int
 			Done int
 		})
-		if reflect.TypeOf(req.Data).Kind().String() != "map"{
+		if reflect.TypeOf(req.Data).Kind().String() != "map" {
 			response(c, -1, "请求参数格式错误！", "")
 			return
 		}
@@ -62,7 +62,7 @@ func apiHandler(c *gin.Context) {
 
 	case 1002: // update task content
 		data := new(struct {
-			Id int
+			Id      int
 			Content string
 		})
 		if reflect.TypeOf(req.Data).Kind().String() != "map" {

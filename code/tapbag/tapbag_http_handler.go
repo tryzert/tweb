@@ -7,7 +7,6 @@ import (
 	"tweb/code/tool"
 )
 
-
 func indexViewHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.HTML(http.StatusOK, "tapbag_index.html", nil)
@@ -18,24 +17,32 @@ func onlineFileHandler(srcPath string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		path := c.DefaultQuery("path", "")
 		fullPath := filepath.Join(srcPath, path)
-		if tool.IsFile(fullPath) {
-			c.File(fullPath)
-		} else {
-			c.HTML(http.StatusNotFound, "notFound404_index.html", nil)
+		if exist, _ := tool.FileExist(fullPath); exist {
+			if tool.IsFile(fullPath) {
+				c.File(fullPath)
+				return
+			}
+
 		}
+		c.HTML(http.StatusNotFound, "notFound404_index.html", nil)
 	}
 }
 
 func downloadFileHandler(srcPath string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		fullpath := filepath.Join(srcPath, c.DefaultQuery("path", ""))
+		filesKey := c.DefaultQuery("files", "")
+
+		fullpath := filepath.Join(srcPath, ".twebTempDir", filesKey)
 		if exist, err := tool.FileExist(fullpath); exist && err == nil {
 			if tool.IsFile(fullpath) {
-				tool.Download(c, fullpath, tool.FILE, true)
+				tool.Download(c, fullpath)
 				return
 			}
 		}
-		c.HTML(http.StatusNotFound, "notFound404_index.html", nil)
+		if filesKey == "" {
+			c.HTML(http.StatusNotFound, "notFound404_index.html", nil)
+			return
+		}
 	}
 }
 

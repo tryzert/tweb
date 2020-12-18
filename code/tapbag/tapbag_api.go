@@ -10,10 +10,9 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"time"
 	"tweb/code/tool"
 )
-
-
 
 func response(c *gin.Context, code int, tip string, data interface{}) {
 	c.JSON(http.StatusOK, ResponseContent{
@@ -22,7 +21,6 @@ func response(c *gin.Context, code int, tip string, data interface{}) {
 		Data: data,
 	})
 }
-
 
 func apiHandler(srcPath string) func(c *gin.Context) {
 	return func(c *gin.Context) {
@@ -69,7 +67,7 @@ func apiHandler(srcPath string) func(c *gin.Context) {
 		// 2004 move
 		// 2005 rename
 		case 2005:
-			if reflect.TypeOf(req.Data).Kind().String() == "map"{
+			if reflect.TypeOf(req.Data).Kind().String() == "map" {
 				if data, ok := req.Data.(map[string]interface{}); ok {
 					oldpath, ok1 := data["oldpath"]
 					newpath, ok2 := data["newpath"]
@@ -102,7 +100,6 @@ func apiHandler(srcPath string) func(c *gin.Context) {
 
 	}
 }
-
 
 // 2000
 func requestFiles(c *gin.Context, srcPath string, rdata string) {
@@ -141,7 +138,7 @@ func requestFiles(c *gin.Context, srcPath string, rdata string) {
 			fileinfo.Openable = true
 		} else {
 			fileextname := strings.ToLower(filepath.Ext(file.Name()))
-			if fileextname == ".zip" || fileextname == ".gz"  || fileextname == ".tar" || fileextname == ".xz"{
+			if fileextname == ".zip" || fileextname == ".gz" || fileextname == ".tar" || fileextname == ".xz" {
 				fileinfo.Type = "archive"
 				fileinfo.Openable = false
 			} else if fileextname == ".mp3" {
@@ -150,7 +147,7 @@ func requestFiles(c *gin.Context, srcPath string, rdata string) {
 			} else if fileextname == ".doc" {
 				fileinfo.Type = "doc"
 				fileinfo.Openable = false
-			} else if fileextname == ".png" || fileextname == ".jpg" || fileextname == ".svg"{
+			} else if fileextname == ".png" || fileextname == ".jpg" || fileextname == ".svg" {
 				fileinfo.Type = "image"
 				fileinfo.Openable = true
 			} else if fileextname == ".pdf" {
@@ -181,7 +178,6 @@ func requestFiles(c *gin.Context, srcPath string, rdata string) {
 	response(c, 2000, "请求成功！", files)
 }
 
-
 func requestMakeNewFolder(c *gin.Context, srcPath, relpath string) {
 	fullpath := filepath.Join(srcPath, filepath.Clean(relpath))
 	exist, err := tool.FileExist(fullpath)
@@ -190,7 +186,7 @@ func requestMakeNewFolder(c *gin.Context, srcPath, relpath string) {
 		return
 	}
 	if exist {
-		response(c, -1,"文件夹已存在！", nil)
+		response(c, -1, "文件夹已存在！", nil)
 		return
 	}
 	err = os.Mkdir(fullpath, os.ModePerm)
@@ -200,7 +196,6 @@ func requestMakeNewFolder(c *gin.Context, srcPath, relpath string) {
 	}
 	response(c, 2001, "创建文件夹成功！", nil)
 }
-
 
 // oldName and newName are full path
 func requestRename(c *gin.Context, srcPath, oldPath, newPath string) {
@@ -213,11 +208,11 @@ func requestRename(c *gin.Context, srcPath, oldPath, newPath string) {
 		return
 	}
 	if !exist1 {
-		response(c, -1,"无法对不存在的文件重命名！", nil)
+		response(c, -1, "无法对不存在的文件重命名！", nil)
 		return
 	}
 	if exist2 {
-		response(c, -1,"文件名重复了！", nil)
+		response(c, -1, "文件名重复了！", nil)
 		return
 	}
 	if os.Rename(opath, npath) != nil {
@@ -226,7 +221,6 @@ func requestRename(c *gin.Context, srcPath, oldPath, newPath string) {
 		response(c, 2005, "文件重命名成功！！", nil)
 	}
 }
-
 
 func requestRemove(c *gin.Context, srcPath string, data []interface{}) {
 	var err error
@@ -247,11 +241,31 @@ func requestRemove(c *gin.Context, srcPath string, data []interface{}) {
 	}
 }
 
-
 func requestDownload(c *gin.Context, srcPath string, data []interface{}) {
+	files := []string{}
 	for _, relpath := range data {
 		absPath := filepath.Join(srcPath, fmt.Sprint(relpath))
-		fmt.Println(absPath)
+		if exist, _ := tool.FileExist(absPath); exist {
+			files = append(files, absPath)
+		} else {
+			response(c, -2003, "服务器检测到要下载的部分文件已经不存在！", nil)
+			return
+		}
 	}
-	response(c, 2003, "hhh", data)
+	if len(files) == 1 {
+
+	}
+	zipFileName := time.Now().Format("2006-01-02-15:04:05.0000") + ".zip"
+	zipFileDir := filepath.Join(srcPath, ".twebTempDir")
+	if exist, _ := tool.FileExist(zipFileDir); !exist {
+		if os.Mkdir(zipFileDir, os.ModePerm) != nil {
+			response(c, -2003, "服务器初始化工作失败！", nil)
+			return
+		}
+	}
+	if tool.ZipFilesToFile(files, filepath.Join(zipFileDir, zipFileName), false) != nil {
+		response(c, -2003, "服务器打包文件失败！", nil)
+	} else {
+		response(c, 2003, "服务器打包文件成功，下载即将开始！", zipFileName)
+	}
 }

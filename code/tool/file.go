@@ -2,12 +2,10 @@ package tool
 
 import (
 	"archive/zip"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"io"
 	"os"
 	"path/filepath"
-	"reflect"
 	"strings"
 )
 
@@ -50,25 +48,9 @@ func downloadSingleFile(c *gin.Context, fpath string) {
 	c.File(fpath)
 }
 
-//实现 多个文件 下载功能
-func downloadMultiFiles(c *gin.Context, files []string, mode int, compressed bool) {
-	//todo: random filename
-
-}
-
 //抽象的下载方法
-func Download(c *gin.Context, files interface{}, mode int, compressed bool) {
-	if reflect.TypeOf(files).Kind().String() == "string" {
-		downloadSingleFile(c, fmt.Sprint(files))
-		return
-	}
-
-	if reflect.TypeOf(files).Kind().String() == "slice" {
-		v, ok := files.([]string)
-		if ok {
-			downloadMultiFiles(c, v, mode, compressed)
-		}
-	}
+func Download(c *gin.Context, fullpath string) {
+	downloadSingleFile(c, fullpath)
 }
 
 //压缩多个文件

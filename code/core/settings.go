@@ -15,18 +15,18 @@ type Settings struct {
 
 type Services struct {
 	TodolistConf *TodolistConf `json:"todolist_conf"`
-	TapbagConf *TapbagConf `json:"tapbag_conf"`
+	TapbagConf   *TapbagConf   `json:"tapbag_conf"`
 }
-
 
 type TodolistConf struct {
 	Run bool `json:"run"`
 }
 
 type TapbagConf struct {
-	Run bool `json:"run"`
+	Run     bool   `json:"run"`
 	SrcPath string `json:"src_path"`
 }
+
 //初始化配置文件，settings.json
 func initSettings() {
 	services := Services{

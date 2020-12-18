@@ -2,8 +2,8 @@ package todolist
 
 import (
 	"database/sql"
-	_ "github.com/mattn/go-sqlite3"
 	"fmt"
+	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"time"
 	"tweb/code/tool"
@@ -88,7 +88,7 @@ func addActiveTask(data string) (*TaskModel, bool) {
 
 //更新活跃任务的内容
 func updateActiveTaskContent(id int, task string, tag string) (string, string, bool) {
-	stmt, err :=DB.Prepare("UPDATE tasks SET task = ?, date = ?, time = ?, editstatus = ?, tag = ? WHERE id = ?")
+	stmt, err := DB.Prepare("UPDATE tasks SET task = ?, date = ?, time = ?, editstatus = ?, tag = ? WHERE id = ?")
 	if err != nil {
 		log.Println("[todolist.db update]:  准备更新数据失败!")
 		return "", "", false
@@ -190,7 +190,6 @@ func dataHandler(data string) (string, string) {
 	return task, tag
 }
 
-
 //请求数据库中所有的数据
 func queryAllTasks() ([]TaskModel, error) {
 	var res []TaskModel
@@ -257,7 +256,6 @@ func queryHistoryTasks() ([]TaskModel, error) {
 	return res, nil
 }
 
-
 func checkHistoryTasksTimeout(duration time.Duration) {
 	for {
 		rows, err := DB.Query("SELECT id, julianday('now') - julianday(deletetime) FROM tasks WHERE deleted = 1")
@@ -265,8 +263,8 @@ func checkHistoryTasksTimeout(duration time.Duration) {
 			log.Println("[check history tasks timeout 0] update lefttime error!")
 		}
 		var (
-			id int
-			lefttime int
+			id        int
+			lefttime  int
 			flefttime float64
 		)
 		queryRes := [][]int{}

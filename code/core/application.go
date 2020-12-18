@@ -2,10 +2,10 @@ package core
 
 import (
 	"context"
-	"fmt"
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -98,11 +98,7 @@ func run() *http.Server {
 	r.StaticFile("/favicon.ico", "public/favicon.ico")
 	r.StaticFS("/public", http.Dir("public"))
 
-	//文件下载权限鉴定
-	//r.GET("/public/file", func(c *gin.Context) {
-	//	c.File("public/vue/vue.js")
-	//})
-	fmt.Printf("Server running on: http://localhost%v\n", st.Port)
+	log.Printf("Server running on: http://localhost%v\n", st.Port)
 	//_ = r.Run(st.Port)
 	server := &http.Server{Addr: st.Port, Handler: r}
 	SERVER_IS_RUNNING = true
