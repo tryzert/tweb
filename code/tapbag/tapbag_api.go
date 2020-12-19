@@ -66,6 +66,22 @@ func apiHandler(srcPath string) func(c *gin.Context) {
 			response(c, -1, "请求参数错误！", nil)
 		// 2004 move
 		case 2004:
+			if reflect.TypeOf(req.Data).Kind().String() == "map" {
+				if data, ok := req.Data.(map[string]interface{}); ok {
+					fromPath, ok1 := data["from"]
+					toPath, ok2 := data["to"]
+					moveList, ok3 := data["moveList"]
+					if len(data) == 3 && ok1 && ok2 && ok3 {
+						if reflect.TypeOf(moveList).Kind().String() == "slice" {
+							if mList, ok4 := moveList.([]interface{}); ok4 {
+								requestMove(c, srcPath, fromPath, toPath, mList)
+								return
+							}
+
+						}
+					}
+				}
+			}
 			response(c, -1, "请求参数错误！", nil)
 		// 2005 rename
 		case 2005:
@@ -280,6 +296,42 @@ func requestDownload(c *gin.Context, srcPath string, data []interface{}) {
 	}
 }
 
+func requestMove(c *gin.Context, srcPath string, fromPath, toPath interface{}, moveList []interface{}) {
+	from := fmt.Sprint(fromPath)
+	to := fmt.Sprint(toPath)
+	if from == "" || to == "" || len(moveList) == 0 {
+		response(c, -1, "请求参数错误！", nil)
+		return
+	}
+	if from == to {
+		response(c, -2004, "文件已在此路径下！", nil)
+		return
+	}
+	for _, fp := range moveList {
+		fpath := fmt.Sprint(fp)
+		if strings.HasPrefix(to, fpath) {
+			response(c, -2004, "路径冲突：文件夹不能移到子文件夹或本身！", nil)
+			return
+		}
+	}
+	destPath := filepath.Join(srcPath, to)
+	errCount := 0
+	for _, fp := range moveList {
+		fpath := filepath.Join(srcPath, fmt.Sprint(fp))
+		fBaseName := filepath.Base(fpath)
+		err := os.Rename(fpath, filepath.Join(destPath, fBaseName))
+		if err != nil {
+			errCount++
+		}
+	}
+	if errCount == len(moveList) {
+		response(c, -2004, "所有文件均移动失败！", nil)
+	} else if errCount > 0 {
+		response(c, -2004, "部分文件移动失败！", nil)
+	} else {
+		response(c, 2004, "文件移动成功！", nil)
+	}
+}
 
 func requestFolders(c *gin.Context, srcPath, relpath string) {
 	fullpath := filepath.Join(srcPath, relpath)
