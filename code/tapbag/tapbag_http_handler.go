@@ -28,21 +28,14 @@ func onlineFileHandler(srcPath string) gin.HandlerFunc {
 	}
 }
 
-func downloadFileHandler(srcPath string) gin.HandlerFunc {
+func downloadFileHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		filesKey := c.DefaultQuery("files", "")
-
-		fullpath := filepath.Join(srcPath, ".twebTempDir", filesKey)
-		if exist, err := tool.FileExist(fullpath); exist && err == nil {
-			if tool.IsFile(fullpath) {
-				tool.Download(c, fullpath)
-				return
-			}
-		}
-		if filesKey == "" {
+		fileKey := c.DefaultQuery("filekey", "")
+		if fileKey == "" || !Fman.Exist(fileKey){
 			c.HTML(http.StatusNotFound, "notFound404_index.html", nil)
 			return
 		}
+		Download(c, fileKey)
 	}
 }
 

@@ -12,5 +12,5 @@ func RegisterService(r *gin.Engine, srcPath string) {
 	r.POST("/tapbag/api", apiHandler(srcPath))
 	r.GET("/tapbag/api/online", onlineFileHandler(srcPath))
 	r.POST("/tapbag/api/upload", uploadFileHandler(srcPath))
-	r.GET("/tapbag/api/download", downloadFileHandler(srcPath))
+	r.GET("/tapbag/api/download", downloadFileHandler())
 }

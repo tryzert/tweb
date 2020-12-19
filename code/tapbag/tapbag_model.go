@@ -1,5 +1,9 @@
 package tapbag
 
+import (
+	"time"
+)
+
 type RequestContent struct {
 	Code int         `json:"code"`
 	Data interface{} `json:"data"`
@@ -20,8 +24,15 @@ type File struct {
 }
 
 type Folder struct {
-	Name string `json:"name"`
-	Src string `json:"src"`
-	HasChildren bool `json:"hasChildren"`
-	Children []*Folder `json:"children"`
+	Name        string    `json:"name"`
+	Src         string    `json:"src"`
+	HasChildren bool      `json:"hasChildren"`
+	Children    []*Folder `json:"children"`
+}
+
+type FileItem struct {
+	Paths         []string
+	Size          int64
+	VisitHot      int
+	LastVisitTime time.Time
 }

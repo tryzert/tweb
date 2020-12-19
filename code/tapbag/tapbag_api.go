@@ -10,7 +10,6 @@ import (
 	"reflect"
 	"sort"
 	"strings"
-	"time"
 	"tweb/code/tool"
 )
 
@@ -278,22 +277,13 @@ func requestDownload(c *gin.Context, srcPath string, data []interface{}) {
 			return
 		}
 	}
-	if len(files) == 1 {
-
+	fileKey := tool.Encryption(filepath.Join(files...))
+	if Fman.Exist(fileKey) {
+		response(c, 2003, "服务器准备中，下载即将开始！", fileKey)
+		return
 	}
-	zipFileName := time.Now().Format("2006-01-02-15:04:05.0000") + ".zip"
-	zipFileDir := filepath.Join(srcPath, ".twebTempDir")
-	if exist, _ := tool.FileExist(zipFileDir); !exist {
-		if os.Mkdir(zipFileDir, os.ModePerm) != nil {
-			response(c, -2003, "服务器初始化工作失败！", nil)
-			return
-		}
-	}
-	if tool.ZipFilesToFile(files, filepath.Join(zipFileDir, zipFileName), false) != nil {
-		response(c, -2003, "服务器打包文件失败！", nil)
-	} else {
-		response(c, 2003, "服务器打包文件成功，下载即将开始！", zipFileName)
-	}
+	fileKey = Fman.Put(files)
+	response(c, 2003, "服务器准备中，下载即将开始！", fileKey)
 }
 
 func requestMove(c *gin.Context, srcPath string, fromPath, toPath interface{}, moveList []interface{}) {

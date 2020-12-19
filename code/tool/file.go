@@ -2,7 +2,6 @@ package tool
 
 import (
 	"archive/zip"
-	"github.com/gin-gonic/gin"
 	"io"
 	"os"
 	"path/filepath"
@@ -38,19 +37,6 @@ func IsFile(filepath string) bool {
 		return false
 	}
 	return !finfo.IsDir()
-}
-
-//实现 单个文件 下载功能
-func downloadSingleFile(c *gin.Context, fpath string) {
-	filename := filepath.Base(fpath)
-	c.Writer.Header().Add("Content-Type", "application/octet-stream")
-	c.Writer.Header().Add("Content-Disposition", "attachment; filename=\""+filename+"\"")
-	c.File(fpath)
-}
-
-//抽象的下载方法
-func Download(c *gin.Context, fullpath string) {
-	downloadSingleFile(c, fullpath)
 }
 
 //压缩多个文件
@@ -103,4 +89,30 @@ func ZipFilesToStream(files []string, stream io.Writer, compressed bool) error {
 		}
 	}
 	return nil
+}
+
+
+//计算文件或文件夹总大小
+func CalculateFileSize(abspath string) (int64, error) {
+	info, err := os.Stat(abspath)
+	if err != nil {
+		return 0, err
+	}
+	if info.IsDir() {
+		var size int64 = 0
+		err = filepath.Walk(abspath, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if !info.IsDir() {
+				size += info.Size()
+			}
+			return nil
+		})
+		if err != nil {
+			return 0, err
+		}
+		return size, nil
+	}
+	return info.Size(), nil
 }
