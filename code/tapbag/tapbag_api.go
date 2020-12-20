@@ -154,6 +154,9 @@ func requestFiles(c *gin.Context, srcPath, rdata string) {
 	files := []*File{}
 	for id, file := range fs {
 		relpath := filepath.Join(rdata, file.Name())
+		if strings.HasPrefix(relpath, "/.tweb") {
+			continue
+		}
 		if relpath == "" {
 			relpath = "/"
 		}
@@ -248,15 +251,31 @@ func requestRename(c *gin.Context, srcPath, oldPath, newPath string) {
 }
 
 func requestRemove(c *gin.Context, srcPath string, data []interface{}) {
-	var err error
-	errorList := []string{}
-	for _, relpath := range data {
-		absPath := filepath.Join(srcPath, fmt.Sprint(relpath))
-		err = os.RemoveAll(absPath)
-		if err != nil {
-			errorList = append(errorList, fmt.Sprint(relpath))
+	// srcPath/.tweb/recycleBin
+	if len(data) == 0 {
+		response(c, -1, "请求参数错误！", nil)
+		return
+	}
+	destPath := filepath.Join(srcPath, ".tweb/recycleBin")
+	if exist, err := tool.FileExist(destPath); !exist || err != nil {
+		if os.MkdirAll(destPath, os.ModePerm) != nil {
+			panic("srcPath下的 .tweb/recycleBin 文件夹创建失败！")
 		}
 	}
+	var err error
+	errorList := []string{}
+	successList := []string{}
+	for _, relpath := range data {
+		absPath := filepath.Join(srcPath, fmt.Sprint(relpath))
+		baseName := filepath.Base(absPath)
+		err = os.Rename(absPath, filepath.Join(destPath, baseName))
+		if err != nil {
+			errorList = append(errorList, fmt.Sprint(relpath))
+		} else {
+			successList = append(successList, fmt.Sprint(relpath))
+		}
+	}
+	go addDeleteRecord(successList)
 	if len(errorList) == len(data) {
 		response(c, -1, "服务器所有删除操作全部失败！", errorList)
 	} else if len(errorList) > 0 {

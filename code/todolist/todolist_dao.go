@@ -44,6 +44,7 @@ func initDatabase() {
 
 	if db.Ping() != nil {
 		log.Panicln("[todolist.db]： 创建数据库失败！")
+		return
 	}
 	sql_table := `CREATE TABLE IF NOT EXISTS "tasks" (
 		"id" INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -261,6 +262,8 @@ func checkHistoryTasksTimeout(duration time.Duration) {
 		rows, err := DB.Query("SELECT id, julianday('now') - julianday(deletetime) FROM tasks WHERE deleted = 1")
 		if err != nil {
 			log.Println("[check history tasks timeout 0] update lefttime error!")
+			time.Sleep(time.Hour)
+			continue
 		}
 		var (
 			id        int
@@ -273,7 +276,7 @@ func checkHistoryTasksTimeout(duration time.Duration) {
 			if err != nil {
 				log.Println("[check history tasks timeout 1] update lefttime error!")
 				fmt.Println(err)
-				break
+				continue
 			}
 			lefttime = 366 - int(flefttime)
 			queryRes = append(queryRes, []int{id, lefttime})
