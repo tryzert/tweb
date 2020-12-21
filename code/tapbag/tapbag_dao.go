@@ -11,11 +11,12 @@ import (
 )
 
 var DB *sql.DB
+var daoSrcPath string
 
 func init() {
 	exist, err := tool.FileExist("databases/tapbag.db")
 	if err != nil {
-		panic("数据库 tapbag.db 初始化失败！")
+		log.Panicln("数据库 tapbag.db 初始化失败！")
 	}
 	if !exist {
 		initDatabase()
@@ -31,7 +32,6 @@ func init() {
 		}
 		DB = db
 	}
-
 	go checkRecycleBinKeepDays(time.Hour * 6)
 	go checkShareKeepDays(time.Hour * 6)
 }
@@ -59,9 +59,12 @@ func initDatabase() {
 		"id" INTEGER PRIMARY KEY AUTOINCREMENT,
 		"rel_path" TEXT,
 		"file_name" TEXT,
+		"file_type" VARCHAR(10),
 		"share_time" VARCHAR(10),
+		"share_code" INT NOT NULL,
+		"share_url" TEXT NOT NULL,
 		"share_forever" INT NOT NULL DEFAULT 0,
-		"shared_keep_days" INT NOT NULL DEFAULT 366
+		"shared_keep_days" INT NOT NULL DEFAULT 30
 )`
 	db.Exec(sql_table)
 	db = DB
@@ -128,8 +131,7 @@ func checkRecycleBinKeepDays(duration time.Duration) {
 				log.Println("database [tapbag.db] exec update keep days error!")
 			}
 			if 366 - int(it.pastDays) < 0 {
-				// todo: how to get srcPath: define a global variable ?
-				os.RemoveAll(filepath.Join(".tweb/recycleBin", it.filename))
+				os.RemoveAll(filepath.Join(daoSrcPath, ".tweb/recycleBin", it.filename))
 			}
 		}
 		stmt.Close()

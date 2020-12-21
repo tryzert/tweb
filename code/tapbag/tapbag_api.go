@@ -154,9 +154,6 @@ func requestFiles(c *gin.Context, srcPath, rdata string) {
 	files := []*File{}
 	for id, file := range fs {
 		relpath := filepath.Join(rdata, file.Name())
-		if strings.HasPrefix(relpath, "/.tweb") {
-			continue
-		}
 		if relpath == "" {
 			relpath = "/"
 		}
