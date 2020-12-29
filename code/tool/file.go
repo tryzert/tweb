@@ -50,11 +50,11 @@ func ZipFilesToFile(files []string, dest string, compressed bool) error {
 }
 
 //压缩文件到流
-func ZipFilesToStream(files []string, stream io.Writer, compressed bool) error {
+func ZipFilesToStream(filepaths []string, stream io.Writer, compressed bool) error {
 	zw := zip.NewWriter(stream)
 	defer zw.Close()
 
-	for _, path := range files {
+	for _, path := range filepaths {
 		err := filepath.Walk(path, func(root string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -94,25 +94,19 @@ func ZipFilesToStream(files []string, stream io.Writer, compressed bool) error {
 
 //计算文件或文件夹总大小
 func CalculateFileSize(abspath string) (int64, error) {
-	info, err := os.Stat(abspath)
+	_, err := os.Stat(abspath)
 	if err != nil {
 		return 0, err
 	}
-	if info.IsDir() {
-		var size int64 = 0
-		err = filepath.Walk(abspath, func(path string, info os.FileInfo, err error) error {
-			if err != nil {
-				return err
-			}
-			if !info.IsDir() {
-				size += info.Size()
-			}
-			return nil
-		})
+	var size int64
+	err = filepath.Walk(abspath, func(root string, info os.FileInfo, err error) error {
 		if err != nil {
-			return 0, err
+			return err
 		}
-		return size, nil
-	}
-	return info.Size(), nil
+		if !info.IsDir() {
+			size += info.Size()
+		}
+		return nil
+	})
+	return size, nil
 }

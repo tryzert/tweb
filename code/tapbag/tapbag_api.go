@@ -8,7 +8,6 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"sort"
 	"strings"
 	"tweb/code/tool"
 )
@@ -22,6 +21,7 @@ func response(c *gin.Context, code int, tip string, data interface{}) {
 }
 
 func apiHandler(srcPath string) func(c *gin.Context) {
+	filemanager := NewFileManager(srcPath)
 	return func(c *gin.Context) {
 		req := RequestContent{}
 		err := c.ShouldBindJSON(&req)
@@ -36,7 +36,7 @@ func apiHandler(srcPath string) func(c *gin.Context) {
 			//requestFiles(c, srcPath, req.Data)
 			if reflect.TypeOf(req.Data).Name() == "string" {
 				data := reflect.ValueOf(req.Data).String()
-				requestFiles(c, srcPath, data)
+				requestFiles(c, filemanager, srcPath, data)
 			} else {
 				response(c, -1, "请求参数错误！", nil)
 			}
@@ -105,7 +105,7 @@ func apiHandler(srcPath string) func(c *gin.Context) {
 						response(c, -1, "请求参数错误！", nil)
 						return
 					}
-					requestRemove(c, srcPath, data)
+					requestDelete(c, srcPath, data)
 					return
 				}
 			}
@@ -127,7 +127,7 @@ func apiHandler(srcPath string) func(c *gin.Context) {
 }
 
 // 2000
-func requestFiles(c *gin.Context, srcPath, rdata string) {
+func requestFiles(c *gin.Context, fm *FileManager, srcPath, rdata string) {
 	requestDirFullPath := filepath.Join(srcPath, rdata)
 	if requestDirFullPath == "" {
 		requestDirFullPath = "./"
@@ -138,67 +138,29 @@ func requestFiles(c *gin.Context, srcPath, rdata string) {
 		response(c, -1, "请求参数错误！", nil)
 		return
 	}
-	sort.Slice(fs, func(i, j int) bool {
-		a, b := fs[i].IsDir(), fs[j].IsDir()
-		if a && b {
-			return fs[i].Name() < fs[j].Name()
-		}
-		if !a && !b {
-			return fs[i].Name() < fs[j].Name()
-		}
-		if a && !b {
-			return true
-		}
-		return false
-	})
+	//sort.Slice(fs, func(i, j int) bool {
+	//	a, b := fs[i].IsDir(), fs[j].IsDir()
+	//	if a && b {
+	//		return fs[i].Name() < fs[j].Name()
+	//	}
+	//	if !a && !b {
+	//		return fs[i].Name() < fs[j].Name()
+	//	}
+	//	if a && !b {
+	//		return true
+	//	}
+	//	return false
+	//})
 	files := []*File{}
-	for id, file := range fs {
-		relpath := filepath.Join(rdata, file.Name())
+	for id, fileInfo := range fs {
+		relpath := filepath.Join(rdata, fileInfo.Name())
 		if relpath == "" {
 			relpath = "/"
 		}
-		fileinfo := &File{Id: id, Name: file.Name(), Relpath: relpath}
-		if file.IsDir() {
-			fileinfo.Type = "folder"
-			fileinfo.Openable = true
-		} else {
-			fileextname := strings.ToLower(filepath.Ext(file.Name()))
-			if fileextname == ".zip" || fileextname == ".gz" || fileextname == ".tar" || fileextname == ".xz" {
-				fileinfo.Type = "archive"
-				fileinfo.Openable = false
-			} else if fileextname == ".mp3" {
-				fileinfo.Type = "audio"
-				fileinfo.Openable = true
-			} else if fileextname == ".doc" {
-				fileinfo.Type = "doc"
-				fileinfo.Openable = false
-			} else if fileextname == ".png" || fileextname == ".jpg" || fileextname == ".svg" {
-				fileinfo.Type = "image"
-				fileinfo.Openable = true
-			} else if fileextname == ".pdf" {
-				fileinfo.Type = "pdf"
-				fileinfo.Openable = false
-			} else if fileextname == ".ppt" {
-				fileinfo.Type = "ppt"
-				fileinfo.Openable = false
-			} else if fileextname == ".psd" {
-				fileinfo.Type = "psd"
-				fileinfo.Openable = false
-			} else if fileextname == ".txt" || fileextname == ".py" || fileextname == ".cpp" || fileextname == ".c" || fileextname == ".h" || fileextname == ".go" || fileextname == ".java" || fileextname == ".html" {
-				fileinfo.Type = "text"
-				fileinfo.Openable = true
-			} else if fileextname == ".mp4" || fileextname == ".avi" {
-				fileinfo.Type = "video"
-				fileinfo.Openable = true
-			} else if fileextname == ".xls" {
-				fileinfo.Type = "xls"
-				fileinfo.Openable = false
-			} else {
-				fileinfo.Type = "file"
-				fileinfo.Openable = false
-			}
-		}
-		files = append(files, fileinfo)
+		fileItem := &File{Id: id, Name: fileInfo.Name(), Relpath: relpath}
+		fileItem.Type = fm.getType(fileInfo)
+		fileItem.Openable = fm.fileOpenable(fileInfo)
+		files = append(files, fileItem)
 	}
 	response(c, 2000, "请求数据成功！", files)
 }
@@ -247,7 +209,7 @@ func requestRename(c *gin.Context, srcPath, oldPath, newPath string) {
 	}
 }
 
-func requestRemove(c *gin.Context, srcPath string, data []interface{}) {
+func requestDelete(c *gin.Context, srcPath string, data []interface{}) {
 	// srcPath/.tweb/recycleBin
 	if len(data) == 0 {
 		response(c, -1, "请求参数错误！", nil)
@@ -265,6 +227,7 @@ func requestRemove(c *gin.Context, srcPath string, data []interface{}) {
 	for _, relpath := range data {
 		absPath := filepath.Join(srcPath, fmt.Sprint(relpath))
 		baseName := filepath.Base(absPath)
+		// todo 当回收站存在同名文件，删除文件会失败
 		err = os.Rename(absPath, filepath.Join(destPath, baseName))
 		if err != nil {
 			errorList = append(errorList, fmt.Sprint(relpath))
@@ -283,23 +246,23 @@ func requestRemove(c *gin.Context, srcPath string, data []interface{}) {
 }
 
 func requestDownload(c *gin.Context, srcPath string, data []interface{}) {
-	files := []string{}
-	for _, relpath := range data {
-		absPath := filepath.Join(srcPath, fmt.Sprint(relpath))
-		if exist, _ := tool.FileExist(absPath); exist {
-			files = append(files, absPath)
-		} else {
-			response(c, -2003, "服务器检测到要下载的部分文件已经不存在！", nil)
-			return
-		}
-	}
-	fileKey := tool.Encryption(filepath.Join(files...))
-	if Fman.Exist(fileKey) {
-		response(c, 2003, "服务器准备中，下载即将开始！", fileKey)
-		return
-	}
-	fileKey = Fman.Put(files)
-	response(c, 2003, "服务器准备中，下载即将开始！", fileKey)
+	//files := []string{}
+	//for _, relpath := range data {
+	//	absPath := filepath.Join(srcPath, fmt.Sprint(relpath))
+	//	if exist, _ := tool.FileExist(absPath); exist {
+	//		files = append(files, absPath)
+	//	} else {
+	//		response(c, -2003, "服务器检测到要下载的部分文件已经不存在！", nil)
+	//		return
+	//	}
+	//}
+	//fileKey := tool.Encryption(filepath.Join(files...))
+	//if Fman.Exist(fileKey) {
+	//	response(c, 2003, "服务器准备中，下载即将开始！", fileKey)
+	//	return
+	//}
+	//fileKey = Fman.Put(files)
+	//response(c, 2003, "服务器准备中，下载即将开始！", fileKey)
 }
 
 func requestMove(c *gin.Context, srcPath string, fromPath, toPath interface{}, moveList []interface{}) {

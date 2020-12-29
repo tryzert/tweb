@@ -30,7 +30,7 @@ type Folder struct {
 	Children    []*Folder `json:"children"`
 }
 
-type FileItem struct {
+type FileSystem struct {
 	Paths         []string
 	Size          int64
 	VisitHot      int

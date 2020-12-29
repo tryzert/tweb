@@ -2,6 +2,7 @@ package tapbag
 
 import (
 	"database/sql"
+	"fmt"
 	_ "github.com/mattn/go-sqlite3"
 	"log"
 	"os"
@@ -89,8 +90,44 @@ func addDeleteRecord(relpaths []string) (int, error) {
 	return errCount, err
 }
 
+
+func queryAllRecycleBinRecords() error {
+	rows, err := DB.Query(`SELECT * FROM recycleBin`)
+	if err != nil {
+		return err
+	}
+	var (
+		id int
+		orirelpath string
+		filename string
+		deletetime string
+		keepdays string
+	)
+	defer rows.Close()
+	for rows.Next() {
+		rows.Scan(&id, &orirelpath, &filename, &deletetime, &keepdays)
+		fmt.Println(id, orirelpath, filename, deletetime, keepdays)
+	}
+	return nil
+}
+
+//delete from tablename;
+//update sqlite_sequence SET seq = 0 where name ='tablename';
+func clearRecycleBin() error {
+	_, err := DB.Exec(`DELETE FROM recycleBin`)
+	if err != nil {
+		return err
+	}
+	_, err = DB.Exec(`UPDATE sqlite_sequence SET seq = 0 WHERE name ='recycleBin';`)
+	if err != nil {
+		return err
+	}
+	err = os.RemoveAll(filepath.Join(daoSrcPath, ".tweb/recycleBin"))
+	return err
+}
+
 //recover files from recycle bin to their origin dirs
-func recoverFiles(ids []int) {
+func recoverFiles() {
 
 }
 

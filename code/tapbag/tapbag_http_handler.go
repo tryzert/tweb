@@ -1,6 +1,7 @@
 package tapbag
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"path/filepath"
@@ -31,11 +32,12 @@ func onlineFileHandler(srcPath string) gin.HandlerFunc {
 func downloadFileHandler() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		fileKey := c.DefaultQuery("filekey", "")
-		if fileKey == "" || !Fman.Exist(fileKey){
-			c.HTML(http.StatusNotFound, "notFound404_index.html", nil)
-			return
-		}
-		Download(c, fileKey)
+		fmt.Println(fileKey)
+		//if fileKey == "" || !Fman.Exist(fileKey){
+		//	c.HTML(http.StatusNotFound, "notFound404_index.html", nil)
+		//	return
+		//}
+		//Download(c, fileKey)
 	}
 }
 
